@@ -2160,7 +2160,7 @@ str_ldl_CityList				"Stadtliste"
 str_ldl_ConversionLoss				"Bekehrungsverlust"
 str_ldl_FranchiseLoss				"Lizenzgebühren"
 
-str_ldl_GrowthTurns				"Runden zum Wachstum"
+str_ldl_GrowthTurns				"Runden z. Wachstum"
 
 str_ldl_DipProposalsReceived			"Erhaltene Gesuche"
 str_ldl_DipProposalsMade			"Gesendete Gesuche"
