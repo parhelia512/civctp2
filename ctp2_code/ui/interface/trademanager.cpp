@@ -447,7 +447,7 @@ void TradeManager::UpdateCreateList(const PLAYER_INDEX & player_id)
 						data->m_source = city;
 						data->m_resource = g;
 						data->m_destination = maxCity[i];
-						data->m_price = maxValuePerCaravan[i];
+						data->m_price = tradeutil_GetTradeValue(player_id, maxCity[i], g); // # of gold
 						data->m_caravans = tradeutil_GetTradeDistance(city, maxCity[i]);
 						data->m_curDestination.m_id = curDestCity.m_id;
 
@@ -494,7 +494,7 @@ void TradeManager::UpdateCreateList(const PLAYER_INDEX & player_id)
 						}
 
 						MBCHAR buf[20];
-						sprintf(buf, "%d", maxValuePerCaravan[i]);
+						sprintf(buf, "%d", data->m_price);
 						if (ctp2_Static * price = (ctp2_Static *)item->GetChildByIndex(k_PRICE_COL_INDEX))
 						{
 							price->SetText(buf);
@@ -515,7 +515,7 @@ void TradeManager::UpdateCreateList(const PLAYER_INDEX & player_id)
 						item->SetCompareCallback(CompareCreateItems);
 
 						m_createList->AddItem(item);
-					}
+					} // if(maxValuePerCaravan[i] > 0)
 				}
 			}
 		}
