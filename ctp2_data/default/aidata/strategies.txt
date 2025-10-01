@@ -392,7 +392,7 @@ STRATEGY_DEFAULT {
     BuildListSequenceElement {
         Priority 6000
         BuildListSequence BUILD_LIST_SEQUENCE_PRODUCTION
-        Top 0.4
+        Bottom 0.4
         ProductionCities
         Advice BUILD_PRODUCTION_ADVICE
     }
@@ -400,7 +400,7 @@ STRATEGY_DEFAULT {
     BuildListSequenceElement {
         Priority 4000
         BuildListSequence BUILD_LIST_SEQUENCE_GOLD
-        Top 0.4
+        Bottom 0.4
         CommerceCities
         Advice BUILD_GOLD_ADVICE
     }
@@ -416,7 +416,7 @@ STRATEGY_DEFAULT {
     BuildListSequenceElement {
         Priority 5000
         BuildListSequence BUILD_LIST_SEQUENCE_SCIENCE
-        Top 0.4
+        Bottom 0.4
         CommerceCities
         Advice BUILD_SCIENCE_ADVICE
     }
@@ -1555,7 +1555,7 @@ STRATEGY_SCIENTIST_DEFAULT {
     BuildListSequenceElement {
         Priority 5000
         BuildListSequence BUILD_LIST_SEQUENCE_PRODUCTION
-        Top 0.4
+        Bottom 0.4
         ProductionCities
         Advice BUILD_PRODUCTION_ADVICE
     }
@@ -1563,7 +1563,7 @@ STRATEGY_SCIENTIST_DEFAULT {
     BuildListSequenceElement {
         Priority 4000
         BuildListSequence BUILD_LIST_SEQUENCE_GOLD
-        Top 0.4
+        Bottom 0.4
         CommerceCities
         Advice BUILD_GOLD_ADVICE
     }
@@ -1579,7 +1579,7 @@ STRATEGY_SCIENTIST_DEFAULT {
     BuildListSequenceElement {
         Priority 6000
         BuildListSequence BUILD_LIST_SEQUENCE_SCIENCE
-        Top 0.4
+        Bottom 0.4
         CommerceCities
         Advice BUILD_SCIENCE_ADVICE
     }
@@ -2060,7 +2060,7 @@ STRATEGY_MILITARIST_DEFAULT {
     BuildListSequenceElement {
         Priority 6000
         BuildListSequence BUILD_LIST_SEQUENCE_PRODUCTION
-        Top 0.4
+        Bottom 0.4
         ProductionCities
         Advice BUILD_PRODUCTION_ADVICE
     }
@@ -2068,7 +2068,7 @@ STRATEGY_MILITARIST_DEFAULT {
     BuildListSequenceElement {
         Priority 4000
         BuildListSequence BUILD_LIST_SEQUENCE_GOLD
-        Top 0.4
+        Bottom 0.4
         CommerceCities
         Advice BUILD_GOLD_ADVICE
     }
@@ -2084,7 +2084,7 @@ STRATEGY_MILITARIST_DEFAULT {
     BuildListSequenceElement {
         Priority 5000
         BuildListSequence BUILD_LIST_SEQUENCE_SCIENCE
-        Top 0.4
+        Bottom 0.4
         CommerceCities
         Advice BUILD_SCIENCE_ADVICE
     }
@@ -2573,7 +2573,7 @@ STRATEGY_ECONOMIC_DEFAULT {
     BuildListSequenceElement {
         Priority 5000
         BuildListSequence BUILD_LIST_SEQUENCE_PRODUCTION
-        Top 0.4
+        Bottom 0.4
         ProductionCities
         Advice BUILD_PRODUCTION_ADVICE
     }
@@ -2581,7 +2581,7 @@ STRATEGY_ECONOMIC_DEFAULT {
     BuildListSequenceElement {
         Priority 6000
         BuildListSequence BUILD_LIST_SEQUENCE_GOLD
-        Top 0.4
+        Bottom 0.4
         CommerceCities
         Advice BUILD_GOLD_ADVICE
     }
@@ -2597,7 +2597,7 @@ STRATEGY_ECONOMIC_DEFAULT {
     BuildListSequenceElement {
         Priority 4000
         BuildListSequence BUILD_LIST_SEQUENCE_SCIENCE
-        Top 0.4
+        Bottom 0.4
         CommerceCities
         Advice BUILD_SCIENCE_ADVICE
     }
@@ -3077,7 +3077,7 @@ STRATEGY_ECOTOPIAN_DEFAULT {
     BuildListSequenceElement {
         Priority 6000
         BuildListSequence BUILD_LIST_SEQUENCE_PRODUCTION
-        Top 0.4
+        Bottom 0.4
         ProductionCities
         Advice BUILD_PRODUCTION_ADVICE
     }
@@ -3085,7 +3085,7 @@ STRATEGY_ECOTOPIAN_DEFAULT {
     BuildListSequenceElement {
         Priority 5000
         BuildListSequence BUILD_LIST_SEQUENCE_GOLD
-        Top 0.4
+        Bottom 0.4
         CommerceCities
         Advice BUILD_GOLD_ADVICE
     }
@@ -3101,7 +3101,7 @@ STRATEGY_ECOTOPIAN_DEFAULT {
     BuildListSequenceElement {
         Priority 4000
         BuildListSequence BUILD_LIST_SEQUENCE_SCIENCE
-        Top 0.4
+        Bottom 0.4
         CommerceCities
         Advice BUILD_SCIENCE_ADVICE
     }
@@ -3581,7 +3581,7 @@ STRATEGY_DIPLOMATIC_DEFAULT {
     BuildListSequenceElement {
         Priority 5000
         BuildListSequence BUILD_LIST_SEQUENCE_PRODUCTION
-        Top 0.4
+        Bottom 0.4
         ProductionCities
         Advice BUILD_PRODUCTION_ADVICE
     }
@@ -3589,7 +3589,7 @@ STRATEGY_DIPLOMATIC_DEFAULT {
     BuildListSequenceElement {
         Priority 4000
         BuildListSequence BUILD_LIST_SEQUENCE_GOLD
-        Top 0.4
+        Bottom 0.4
         CommerceCities
         Advice BUILD_GOLD_ADVICE
     }
@@ -3605,7 +3605,7 @@ STRATEGY_DIPLOMATIC_DEFAULT {
     BuildListSequenceElement {
         Priority 6000
         BuildListSequence BUILD_LIST_SEQUENCE_SCIENCE
-        Top 0.4
+        Bottom 0.4
         CommerceCities
         Advice BUILD_SCIENCE_ADVICE
     }
