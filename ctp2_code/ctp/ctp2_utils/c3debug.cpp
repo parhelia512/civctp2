@@ -302,7 +302,7 @@ void c3debug_ExceptionExecute(CivExceptionFunction function)
 void c3debug_Assert(char const *s, char const * file, int line)
 {
 	DPRINTF(k_DBG_FIX, ("Assertion (%s) Failed in File:%s, Line:%d\n", s, file, line));
-	DPRINTF(k_DBG_FIX, ("Stack Trace: '%s'\n", c3debug_StackTrace()));
+	DPRINTF(k_DBG_FIX, ("Stack Trace:\n%s\n", c3debug_StackTrace()));
 
 #if defined(_DEBUG)
 #if defined(WIN32)
