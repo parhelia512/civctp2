@@ -1153,36 +1153,35 @@ void ParseCommandLine(PSTR szCmdLine)
 #if defined(_MSC_VER)
 static LONG _cdecl main_CivExceptionHandler(LPEXCEPTION_POINTERS pException)
 {
-#if defined(_DEBUG) || defined(USE_LOGGING)
-
 	MBCHAR * s;
 
 	switch (pException->ExceptionRecord->ExceptionCode)
 	{
-	case EXCEPTION_ACCESS_VIOLATION:        s = "Access Violation";                break;
-	case EXCEPTION_ARRAY_BOUNDS_EXCEEDED:   s = "Array Bounds Exceeded";           break;
-	case EXCEPTION_BREAKPOINT:              s = "Breakpoint";                      break;
-	case EXCEPTION_DATATYPE_MISALIGNMENT:   s = "Datatype Misalignment";           break;
-	case EXCEPTION_FLT_DENORMAL_OPERAND:    s = "Floating Point Denormal Operand"; break;
-	case EXCEPTION_FLT_DIVIDE_BY_ZERO:      s = "Floating Point Divide by Zero";   break;
-	case EXCEPTION_FLT_INEXACT_RESULT:      s = "Floating Point Inexact Result";   break;
-	case EXCEPTION_FLT_INVALID_OPERATION:   s = "Floating Point Invalid Operation";break;
-	case EXCEPTION_FLT_OVERFLOW:            s = "Floating Point Overflow";         break;
-	case EXCEPTION_FLT_STACK_CHECK:         s = "Floating Point Stack Check";      break;
-	case EXCEPTION_FLT_UNDERFLOW:           s = "Floating Point Underflow";        break;
-	case EXCEPTION_GUARD_PAGE:              s = "Guard Page";                      break;
-	case EXCEPTION_ILLEGAL_INSTRUCTION:     s = "Illegal Instruction";             break;
-	case EXCEPTION_IN_PAGE_ERROR:           s = "In-page Error";                   break;
-	case EXCEPTION_INT_DIVIDE_BY_ZERO:      s = "Integer Divide By Zero";          break;
-	case EXCEPTION_INT_OVERFLOW:            s = "Integer Overflow";                break;
-	case EXCEPTION_INVALID_DISPOSITION:     s = "Invalid Disposition";             break;
-	case EXCEPTION_NONCONTINUABLE_EXCEPTION:s = "Non-Continuable Exception";       break;
-	case EXCEPTION_PRIV_INSTRUCTION:        s = "Privileged Instruction";          break;
-	case EXCEPTION_SINGLE_STEP:             s = "Single Step";                     break;
-	case EXCEPTION_STACK_OVERFLOW:          s = "Stack Overflow";                  break;
-	default:                                s = "Unknown";                         break;
+		case EXCEPTION_ACCESS_VIOLATION:        s = "Access Violation";                break;
+		case EXCEPTION_ARRAY_BOUNDS_EXCEEDED:   s = "Array Bounds Exceeded";           break;
+		case EXCEPTION_BREAKPOINT:              s = "Breakpoint";                      break;
+		case EXCEPTION_DATATYPE_MISALIGNMENT:   s = "Datatype Misalignment";           break;
+		case EXCEPTION_FLT_DENORMAL_OPERAND:    s = "Floating Point Denormal Operand"; break;
+		case EXCEPTION_FLT_DIVIDE_BY_ZERO:      s = "Floating Point Divide by Zero";   break;
+		case EXCEPTION_FLT_INEXACT_RESULT:      s = "Floating Point Inexact Result";   break;
+		case EXCEPTION_FLT_INVALID_OPERATION:   s = "Floating Point Invalid Operation";break;
+		case EXCEPTION_FLT_OVERFLOW:            s = "Floating Point Overflow";         break;
+		case EXCEPTION_FLT_STACK_CHECK:         s = "Floating Point Stack Check";      break;
+		case EXCEPTION_FLT_UNDERFLOW:           s = "Floating Point Underflow";        break;
+		case EXCEPTION_GUARD_PAGE:              s = "Guard Page";                      break;
+		case EXCEPTION_ILLEGAL_INSTRUCTION:     s = "Illegal Instruction";             break;
+		case EXCEPTION_IN_PAGE_ERROR:           s = "In-page Error";                   break;
+		case EXCEPTION_INT_DIVIDE_BY_ZERO:      s = "Integer Divide By Zero";          break;
+		case EXCEPTION_INT_OVERFLOW:            s = "Integer Overflow";                break;
+		case EXCEPTION_INVALID_DISPOSITION:     s = "Invalid Disposition";             break;
+		case EXCEPTION_NONCONTINUABLE_EXCEPTION:s = "Non-Continuable Exception";       break;
+		case EXCEPTION_PRIV_INSTRUCTION:        s = "Privileged Instruction";          break;
+		case EXCEPTION_SINGLE_STEP:             s = "Single Step";                     break;
+		case EXCEPTION_STACK_OVERFLOW:          s = "Stack Overflow";                  break;
+		default:                                s = "Unknown";                         break;
 	}
 
+#if defined(_DEBUG) || defined(USE_LOGGING)
 	DPRINTF(k_DBG_FIX, ("Exception: '%s' thrown.\n", s));
 	s = c3debug_ExceptionStackTrace(pException);
 	DPRINTF(k_DBG_FIX, ("Exception Stack Trace:\n%s\n", s));
@@ -1191,7 +1190,7 @@ static LONG _cdecl main_CivExceptionHandler(LPEXCEPTION_POINTERS pException)
 
 #else // _DEBUG
 
-#ifdef _BFR_
+#if defined(_BFR_)
 	if (g_logCrashes)
 #endif
 	{
@@ -1201,7 +1200,18 @@ static LONG _cdecl main_CivExceptionHandler(LPEXCEPTION_POINTERS pException)
 
 		if (crashLog)
 		{
-			fprintf(crashLog, "Version %s\n", Os::GetExeVersion().c_str());
+#if defined(_X86_)
+			fprintf(crashLog, "Windows x86 Version %s\n", Os::GetExeVersion().c_str());
+#elif defined(_AMD64_)
+			fprintf(crashLog, "Windows x64 Version %s\n", Os::GetExeVersion().c_str());
+#elif defined(_ARM_)
+			fprintf(crashLog, "Windows ARM32 Version %s\n", Os::GetExeVersion().c_str());
+#elif defined(_ARM64_)
+			fprintf(crashLog, "Windows ARM64 Version %s\n", Os::GetExeVersion().c_str());
+#else
+#error Version string not defined for this processor architecture
+#endif
+			fprintf(crashLog, "Exception: '%s' thrown.\n", s);
 			fprintf(crashLog, "%s\n", c3debug_ExceptionStackTrace(pException));
 			fclose(crashLog);
 		}
