@@ -416,10 +416,12 @@ void DebugCallStack_DumpAddress (LogClass log_class, size_t address)
 
 	caller_name = Debug_FunctionNameAndOffsetGet (address, &offset);
 
-#if SIZE_MAX == _UI64_MAX
+#if SIZE_MAX == UINT64_MAX
 	LOG_INDIRECT (NULL, 0, (log_class, "  0x%016x  [%s + 0x%x]\n", address, caller_name, offset));
-#elif SIZE_MAX == UINT_MAX
+#elif SIZE_MAX == UINT32_MAX
 	LOG_INDIRECT (NULL, 0, (log_class, "  0x%08x  [%s + 0x%x]\n", address, caller_name, offset));
+#else
+#error Code is only implemented for 32 or 64 bit or your compiler does not the needed macros
 #endif
 }
 
@@ -568,13 +570,13 @@ void DebugCallStack_Save  (size_t *call_stack, int number, size_t Ebp, DWORD fra
 	if(Ebp == 0)
 	{
 #ifdef WIN32
-#if SIZE_MAX == _UI64_MAX
+#if SIZE_MAX == UINT64_MAX
 		// None of those really work and CaptureStackBackTrace is not optimal either
 //		base_pointer = (size_t)_AddressOfReturnAddress();
 //		base_pointer = (size_t)_ReturnAddress();
 //		asm("\t movq %%rbp,%0" : "=r"(base_pointer));
 //		asm("mov %%rbp, %0" : "=r"(base_pointer));
-#elif SIZE_MAX == UINT_MAX
+#elif SIZE_MAX == UINT32_MAX
 		__asm mov base_pointer, ebp;
 #endif
 #else // if GCC 64 bit
@@ -590,10 +592,12 @@ void DebugCallStack_Save  (size_t *call_stack, int number, size_t Ebp, DWORD fra
 	caller = 0;
 	index = 0;
 
-#if SIZE_MAX == _UI64_MAX
+#if SIZE_MAX == UINT64_MAX
 	size_t pointerSize = 8; // 8 bytes for 64 bit
-#elif SIZE_MAX == UINT_MAX
+#elif SIZE_MAX == UINT32_MAX
 	size_t pointerSize = 4; // 4 bytes for 32 bit
+#else
+#error Code is only implemented for 32 or 64 bit or your compiler does not the needed macros
 #endif
 
 	while ((!finished) && ( index < number))
@@ -678,10 +682,12 @@ void DebugCallStack_Show  (LogClass log_class, size_t *call_stack, int number)
 
 		caller_name = Debug_FunctionNameAndOffsetGet (caller, &offset);
 
-#if SIZE_MAX == _UI64_MAX
+#if SIZE_MAX == UINT64_MAX
 		LOG_INDIRECT (NULL, 0, (log_class, "  0x%016x  [%s + 0x%x]\n", caller, caller_name, offset));
-#elif SIZE_MAX == UINT_MAX
+#elif SIZE_MAX == UINT32_MAX
 		LOG_INDIRECT (NULL, 0, (log_class, "  0x%08x  [%s + 0x%x]\n", caller, caller_name, offset));
+#else
+#error Code is only implemented for 32 or 64 bit or your compiler does not the needed macros
 #endif
 
 		index ++;
@@ -727,10 +733,12 @@ void DebugCallStack_ShowToFile  (LogClass log_class, size_t *call_stack, int num
 			strcpy(allocator_name, caller_name);
 		}
 
-#if SIZE_MAX == _UI64_MAX
+#if SIZE_MAX == UINT64_MAX
 		fprintf(file, "0x%016zx [%s+0x%zx] / ", caller, caller_name, offset);
-#elif SIZE_MAX == UINT_MAX
+#elif SIZE_MAX == UINT32_MAX
 		fprintf(file, "0x%08zx [%s+0x%zx] / ", caller, caller_name, offset);
+#else
+#error Code is only implemented for 32 or 64 bit or your compiler does not the needed macros
 #endif
 		index ++;
 	}
@@ -809,10 +817,12 @@ char * c3debug_StackTrace(void)
 
 		caller_name = Debug_FunctionNameAndOffsetGet (caller, &offset);
 
-#if SIZE_MAX == _UI64_MAX
+#if SIZE_MAX == UINT64_MAX
 		sprintf(function_name, "  0x%016zx  [%s + 0x%zx]\n", caller, caller_name, offset);
-#elif SIZE_MAX == UINT_MAX
+#elif SIZE_MAX == UINT32_MAX
 		sprintf(function_name, "  0x%08zx  [%s + 0x%zx]\n", caller, caller_name, offset);
+#else
+#error Code is only implemented for 32 or 64 bit or your compiler does not the needed macros
 #endif
 
 		if (strlen(s_stackTraceString) + strlen(function_name) < k_STACK_TRACE_LEN - 1 )
@@ -865,17 +875,19 @@ char * c3debug_ExceptionStackTrace(LPEXCEPTION_POINTERS exception)
 			size_t offset;
 			caller_name = Debug_FunctionNameAndOffsetGet (caller, &offset);
 
-#if SIZE_MAX == _UI64_MAX
+#if SIZE_MAX == UINT64_MAX
 			sprintf(function_name, "  0x%016zx  [%s + 0x%zx]\n", caller, caller_name, offset);
-#elif SIZE_MAX == UINT_MAX
+#elif SIZE_MAX == UINT32_MAX
 			sprintf(function_name, "  0x%08zx  [%s + 0x%zx]\n", caller, caller_name, offset);
+#else
+#error Code is only implemented for 32 or 64 bit or your compiler does not the needed macros
 #endif
 		}
 		else
 		{
-#if SIZE_MAX == _UI64_MAX
+#if SIZE_MAX == UINT64_MAX
 			sprintf(function_name, "  0x%016zx\n", caller);
-#elif SIZE_MAX == UINT_MAX
+#elif SIZE_MAX == UINT32_MAX
 			sprintf(function_name, "  0x%08zx\n", caller);
 #endif
 		}
@@ -908,18 +920,22 @@ char * c3debug_ExceptionStackTraceFromFile(FILE *f)
 	while(!feof(f))
 	{
 		if(fgets(line, 1024, f)) {
-#if SIZE_MAX == _UI64_MAX
+#if SIZE_MAX == UINT64_MAX
 			if(sscanf(line, "  0x%016zx", &caller) == 1)
-#elif SIZE_MAX == UINT_MAX
+#elif SIZE_MAX == UINT32_MAX
 			if(sscanf(line, "  0x%08zx", &caller) == 1)
+#else
+#error Code is only implemented for 32 or 64 bit or your compiler does not the needed macros
 #endif
 			{
 				caller_name = Debug_FunctionNameAndOffsetGet(caller, &offset);
 
-#if SIZE_MAX == _UI64_MAX
+#if SIZE_MAX == UINT64_MAX
 				sprintf(function_name, "  0x%016zx  [%s + 0x%zx]\n", caller, caller_name, offset);
-#elif SIZE_MAX == UINT_MAX
+#elif SIZE_MAX == UINT32_MAX
 				sprintf(function_name, "  0x%08zx  [%s + 0x%zx]\n", caller, caller_name, offset);
+#else
+#error Code is only implemented for 32 or 64 bit or your compiler does not the needed macros
 #endif
 
 				if (strlen(s_stackTraceString) + strlen(function_name) < k_STACK_TRACE_LEN - 1 )

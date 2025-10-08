@@ -32,30 +32,33 @@
 
 #include "c3.h"
 #include "astarpnt.h"
+#include <stdint.h>
 
 /// Determine whether this point is identical to another one.
 /// \param rhs The other point
 /// \remarks   Identical is defined as having the same map location.
 bool AstarPoint::Identical(const AstarPoint &rhs) const
 {
-    return m_pos == rhs.m_pos;
+	return m_pos == rhs.m_pos;
 }
 
 /// Mark a point as unused.
 /// \remarks Not really useful, except for debugging.
 void AstarPoint::Clear()
 {
-    m_flags = 0xcdcdcdcdu;
-#if SIZE_MAX == _UI64_MAX
-    m_parent = (AstarPoint *) 0xcdcdcdcdcdcdcdcd;
-    m_next = (AstarPoint *) 0xcdcdcdcdcdcdcdcd;
-#elif SIZE_MAX == UINT_MAX
-    m_parent = (AstarPoint *) 0xcdcdcdcd;
-    m_next = (AstarPoint *) 0xcdcdcdcd;
+	m_flags = 0xcdcdcdcdu;
+#if SIZE_MAX == UINT64_MAX
+	m_parent = (AstarPoint *) 0xcdcdcdcdcdcdcdcd;
+	m_next = (AstarPoint *) 0xcdcdcdcdcdcdcdcd;
+#elif SIZE_MAX == UINT32_MAX
+	m_parent = (AstarPoint *) 0xcdcdcdcd;
+	m_next = (AstarPoint *) 0xcdcdcdcd;
+#else
+#error Code is only implemented for 32 or 64 bit or your compiler does not the needed macros
 #endif
-    m_pos.x = (sint16) 0xcdcd;
-    m_past_cost = (float) 0xcdcdcdcd;
-    m_entry_cost = (float) 0xcdcdcdcd;
-    m_future_cost = (float) 0xcdcdcdcd;
-    m_total_cost = (float) 0xcdcdcdcd;
+	m_pos.x = (sint16) 0xcdcd;
+	m_past_cost = (float) 0xcdcdcdcd;
+	m_entry_cost = (float) 0xcdcdcdcd;
+	m_future_cost = (float) 0xcdcdcdcd;
+	m_total_cost = (float) 0xcdcdcdcd;
 }
