@@ -166,6 +166,7 @@
 #include <sys/stat.h>
 #include <time.h>
 #include <libgen.h>         // dirname
+#include <signal.h>
 #endif
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
@@ -1221,6 +1222,50 @@ static LONG _cdecl main_CivExceptionHandler(LPEXCEPTION_POINTERS pException)
 
 	return EXCEPTION_EXECUTE_HANDLER;
 }
+#else
+static void main_CivExceptionHandler(int sig)
+{
+	MBCHAR * s;
+
+	switch (sig)
+	{
+		case SIGABRT: s = "Abnormal Terminination (SIGABRT)";        break;
+		case SIGFPE:  s = "Floating Point Exception (SIGFPE)";       break;
+		case SIGILL:  s = "Illigal Instruction (SIGILL)";            break;
+		case SIGINT:  s = "Interrupt Signal Sent (Ctrl+C) (SIGINT)"; break;
+		case SIGSEGV: s = "Segmentation Fault (SIGSEGV)";            break;
+		case SIGTERM: s = "Termination Requested (SIGTERM)";         break;
+		case SIGQUIT: s = "Quit Signal (SIGQUIT)";                   break;
+		default:      s = "Unknown/Unspecified";                     break;
+	}
+
+#if defined(_DEBUG) || defined(USE_LOGGING)
+	DPRINTF(k_DBG_FIX, ("Signal '%s' is send.\n", s));
+	s = c3debug_StackTrace();
+	DPRINTF(k_DBG_FIX, ("Exception Stack Trace:\n%s\n", s));
+
+#else // _DEBUG
+
+#if defined(_BFR_)
+	if (g_logCrashes)
+#endif
+	{
+		FILE * crashLog = fopen("logs" FILE_SEP "crash.txt", "w");
+		if (!crashLog)
+			crashLog = fopen("crash.txt", "w");
+
+		if (crashLog)
+		{
+			fprintf(crashLog, "Linux Version %s\n", Os::GetExeVersion().c_str());
+			fprintf(crashLog, "Signal '%s' is send.\n", s);
+			fprintf(crashLog, "%s\n", c3debug_StackTrace());
+			fclose(crashLog);
+		}
+	}
+
+#endif // _DEBUG
+	exit(sig);
+}
 #endif // _MSC_VER
 
 #ifdef __AUI_USE_DIRECTX__
@@ -1461,11 +1506,19 @@ void main_DisplayPatchDisclaimer()
 #if defined(__GNUC__)
 int CivMain
 (
-	int		    iCmdShow,   // argc
+	int         iCmdShow,    // argc
 	char **	    pSzCmdLine   // argv
 )
 {
-// FIXME: Remove unneeded arguments.
+	signal(SIGABRT, main_CivExceptionHandler);
+	signal(SIGFPE,  main_CivExceptionHandler);
+	signal(SIGILL,  main_CivExceptionHandler);
+	signal(SIGINT,  main_CivExceptionHandler);
+	signal(SIGSEGV, main_CivExceptionHandler);
+	signal(SIGTERM, main_CivExceptionHandler);
+	signal(SIGQUIT, main_CivExceptionHandler);
+
+	// FIXME: Remove unneeded arguments.
 	HINSTANCE hInstance = NULL;
 #else	// __GNUC__
 int WINAPI CivMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine, int iCmdShow)

@@ -797,6 +797,11 @@ void DebugCallStack_ShowToAltFile  (LogClass log_class, size_t *call_stack, int 
 
 char * c3debug_StackTrace(void)
 {
+	if(!function_name_open)
+	{
+		DebugCallStack_Open();
+	}
+
 	size_t caller;
 	const char *caller_name;
 	int index;
