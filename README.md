@@ -147,7 +147,7 @@ make -j$(nproc)
 
 Most optimizations are completely disabled at -O0 even if individual optimization flags are specified. In case CTP2 becomes to slow to be useful you can use higher levels of optimization such as -O1, or -O2.
 
-You can look at `./configure` for options, but there aren't many.
+With `make clean` you can delete all intermedia and output for a clean rebuild. You can look at `./configure` for more options, but there aren't many.
 
 Also, note that `make -j$(nproc)` may fail the first time. Some files are auto-generated and the make dependencies don't catch that.
 
