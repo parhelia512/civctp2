@@ -141,7 +141,7 @@ If you want to build a debug version it is:
 
 ```
 ./autogen.sh
-CFLAGS="$CFLAGS -O0 -fno-omit-frame-pointer" CXXFLAGS="$CXXFLAGS -O0 -fno-omit-frame-pointer" ./configure --enable-silent-rules --enable-debug
+CFLAGS="$CFLAGS -g -O0 -fno-omit-frame-pointer" CXXFLAGS="$CXXFLAGS -g -O0 -fno-omit-frame-pointer" ./configure --enable-silent-rules --enable-debug
 make -j$(nproc)
 ```
 
