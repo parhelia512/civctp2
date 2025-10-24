@@ -199,6 +199,7 @@ public:
 
     void BeginTurn();
     bool CanFight(CellUnitList &defender);
+    bool CanCargoFight(CellUnitList &defender);
     sint32 Fight(CellUnitList &defender);
 
     ORDER_RESULT InvestigateCity(const MapPoint &point);

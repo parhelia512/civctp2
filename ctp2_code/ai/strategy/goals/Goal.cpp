@@ -1689,7 +1689,9 @@ Utility Goal::Compute_Agent_Matching_Value(const Agent_ptr agent_ptr) const
 			}
 		}
 
-		if(m_target_army.IsValid() && !agent_ptr->Get_Army()->CanFight(*m_target_army.AccessData()))
+		if( m_target_army.IsValid()
+		&& !agent_ptr->Get_Army()->CanFight(*m_target_army.AccessData())
+		&& !agent_ptr->Get_Army()->CanCargoFight(*m_target_army.AccessData()))
 		{
 			AI_DPRINTF(k_DBG_SCHEDULER_DETAIL, m_playerId, m_goal_type, -1, ("\t\tGoal::BAD_UTILITY: \t%s, \t%16s, Army cannot fight\n", g_theGoalDB->Get(m_goal_type)->GetNameText(), agent_ptr->Get_Army()->GetName()));
 			return Goal::BAD_UTILITY;

@@ -1842,6 +1842,80 @@ bool ArmyData::CanFight(CellUnitList &defender)
 
 //----------------------------------------------------------------------------
 //
+// Name       : ArmyData::CanCargoFight
+//
+// Description: .
+//
+// Parameters : CellUnitList &defender :
+//
+// Globals    : g_theWorld             : The Game's world
+//
+// Returns    : true if this army's cargo and the defending units in CellUnitList &defender can fight
+//
+// Remark(s)  : -
+//
+//----------------------------------------------------------------------------
+bool ArmyData::CanCargoFight(CellUnitList &defender)
+{
+	for(sint32 j = 0; j < m_nElements; j++)
+	{
+		if(m_array[j]->GetNumCarried() > 0)
+		{
+			UnitDynamicArray* cargoList = m_array[j]->GetCargoList();
+			sint32 i;
+
+			bool haveCombatUnits = false;
+			for(i = 0; i < cargoList->Num(); i++)
+			{
+				if(cargoList->Access(i).GetDBRec()->GetAttack() > 0)
+				{
+					haveCombatUnits = true;
+					break;
+				}
+			}
+			if(!haveCombatUnits)
+				continue;
+
+			MapPoint pos;
+			defender.GetPos(pos);
+			if(g_theWorld->IsCity(pos))
+			{
+				return true;
+			}
+
+			for(i = 0; i < cargoList->Num(); i++)
+			{
+				for(sint32 j = 0; j < defender.Num(); j++)
+				{
+					const UnitRecord *rec = cargoList->Access(i).GetDBRec();
+					if(defender[j].IsSubmarine() && !rec->GetCanAttackUnderwater())
+						continue;
+					if(rec->GetCanAttack() & defender[j].GetDBRec()->GetMovementType())
+						return true;
+
+					// EMOD add CantBeAttacked / Peacekeeper here??
+					// Add Peacekeeper wonder flag where if you are
+					// at peace the enemy cant declare war and cant
+					// attack your troops?
+
+					if(!defender[j].GetDBRec()->GetMovementTypeSea()
+					&& !defender[j].GetDBRec()->GetMovementTypeAir()
+					&& g_theWorld->IsWater(pos)
+					&&(rec->GetCanAttack() &
+					  (k_BIT_MOVEMENT_TYPE_SHALLOW_WATER | k_BIT_MOVEMENT_TYPE_WATER))
+					){
+						return true;
+					}
+				}
+			}
+		}
+	}
+
+	return false;
+}
+
+//----------------------------------------------------------------------------
+//
 // Name       : ArmyData::InvestigateCity
 //
 // Description: Order this army to investigate a city at MapPoint point.
