@@ -356,7 +356,6 @@ public:
                    sint32 argument, GAME_EVENT passedEvent = GEV_MAX);
 
     void ClearOrders();
-    void ClearOrdersExceptGroupUnits();
     bool ExecuteOrders(bool propagate = true);
     void InformAI(const UNIT_ORDER_TYPE order_type, const MapPoint &pos);
 
@@ -426,7 +425,6 @@ public:
     bool ExecuteMoveOrder(Order *order);
 
     void CheckLoadSleepingCargoFromCity();
-//  bool Move(WORLD_DIRECTION, Order *order); // commented, since not used any more
     bool FinishMove(WORLD_DIRECTION d, MapPoint &newPos, UNIT_ORDER_TYPE order);
     bool FinishAttack(Order *order);
     bool CheckSpecialUnitMove(const MapPoint &pos);

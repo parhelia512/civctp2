@@ -201,7 +201,8 @@ bool Army::GetMovementTypeAir() const
 bool Army::GetMoveBonusUnits(sint32 & value) const
 {
 	sint32 value1;
-	if (GetData()->HighestMoveBonusUnit(value1)) {
+	if (GetData()->HighestMoveBonusUnit(value1))
+	{
 		value = value1;
 		return true;
 	}
@@ -287,25 +288,23 @@ bool Army::IsPatrolling() const
 void Army::SetPatrolling(bool p)
 {
 	Assert(false);
-
 }
 
 void Army::GetActors(sint32 &n, UnitActor **moveActor, UnitActor *butnotthis)
 {
 	Assert(false);
-
 }
 
 bool Army::GetTopVisibleUnitOfMoveType
 (
-	PLAYER_INDEX const	looker,
-	uint32 const		moveType,
-	sint32 &			maxi,
-	bool &				isResyncReported
+    PLAYER_INDEX const	looker,
+    uint32 const		moveType,
+    sint32 &			maxi,
+    bool &				isResyncReported
 ) const
 {
 	return GetData()->GetTopVisibleUnitOfMoveType
-						(looker, moveType, maxi, isResyncReported);
+	                    (looker, moveType, maxi, isResyncReported);
 }
 
 Unit Army::GetTopVisibleUnit(PLAYER_INDEX const looking_player) const
@@ -359,7 +358,7 @@ bool Army::CanBeSued()
 }
 
 bool Army::CanCauseUnhappiness(double &chance, sint32 &timer, sint32 &amount,
-							   sint32 &uindex)
+                               sint32 &uindex)
 {
 	return AccessData()->CanCauseUnhappiness(chance, timer, amount, uindex);
 }
@@ -370,7 +369,7 @@ bool Army::CanCauseUnhappiness(double &chance, sint32 &timer, sint32 &amount)
 }
 
 bool Army::CanPlantNuke(double &chance, double &escape_chance,
-				  sint32 &uindex)
+                        sint32 &uindex)
 {
 	return AccessData()->CanPlantNuke(chance, escape_chance, uindex);
 }
@@ -381,30 +380,30 @@ bool Army::CanPlantNuke(double &chance, double &escape_chance)
 }
 
 bool Army::CanSlaveRaid(double &success, double &death,
-						sint32 &timer, sint32 &amount)
+                        sint32 &timer, sint32 &amount)
 {
 	return AccessData()->CanSlaveRaid(success, death,
-									  timer, amount);
+	                                  timer, amount);
 }
 bool Army::IsSlaveRaidPossible(const MapPoint &point,
-							   double &success,
-							   double &death,
-							   sint32 &timer,
-							   sint32 &amount,
-							   sint32 &uindex,
-							   bool &target_is_city,
-							   Unit &target_city,
-							   Unit &home_city)
+                               double &success,
+                               double &death,
+                               sint32 &timer,
+                               sint32 &amount,
+                               sint32 &uindex,
+                               bool &target_is_city,
+                               Unit &target_city,
+                               Unit &home_city)
 {
 	return AccessData()->IsSlaveRaidPossible(point,
-											 success,
-											 death,
-											 timer,
-											 amount,
-											 uindex,
-											 target_is_city,
-											 target_city,
-											 home_city);
+	                                         success,
+	                                         death,
+	                                         timer,
+	                                         amount,
+	                                         uindex,
+	                                         target_is_city,
+	                                         target_city,
+	                                         home_city);
 }
 
 bool Army::CanEnslaveSettler(sint32 &uindex)
@@ -413,7 +412,7 @@ bool Army::CanEnslaveSettler(sint32 &uindex)
 }
 
 bool Army::CanUndergroundRailway(double &success, double &death,
-								 sint32 &uindex)
+                                 sint32 &uindex)
 {
 	return AccessData()->CanUndergroundRailway(success, death, uindex);
 }
@@ -497,21 +496,6 @@ bool Army::CanSoothsay()
 {
 	return AccessData()->CanSoothsay();
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 bool Army::AbleToPlantNukeTarget(const MapPoint &point, sint32 &uindex)
 {
@@ -773,7 +757,7 @@ sint32 Army::GetMinFuel() const
 
 void Army::CalcRemainingFuel(sint32 &num_tiles_to_half, sint32 &num_tiles_to_empty) const
 {
-    GetData()->CalcRemainingFuel(num_tiles_to_half, num_tiles_to_empty);
+	GetData()->CalcRemainingFuel(num_tiles_to_half, num_tiles_to_empty);
 }
 
 bool Army::CanMove() const
@@ -843,9 +827,9 @@ bool Army::CanAdvertise() const
 
 void Army::GetCurrentHP
 (
-	sint32 &	count,
-	sint32		unit_type[MAX_UNIT_COUNT],
-	sint32		unit_hp[MAX_UNIT_COUNT]
+    sint32 &    count,
+    sint32      unit_type[MAX_UNIT_COUNT],
+    sint32      unit_hp[MAX_UNIT_COUNT]
 ) const
 {
 	GetData()->GetCurrentHP(count, unit_type, unit_hp);
