@@ -806,6 +806,13 @@ sint32 Agent::DisbandObsoleteUnits()
 	if ( (power > 0) && ((threat/(double)power) > 1.0))
 		return 0;
 
+	if(unit_count > 1)
+	{
+		AI_DPRINTF(k_DBG_SCHEDULER, m_army.GetOwner(), Get_Goal_Type(), -1, ("*** Ungroup before disbanding Army: %s\n", m_army->GetName()));
+		Ungroup_Order();
+		return 0;
+	}
+
 	Unit        city_unit   = g_theWorld->GetCity(pos);
 
 	if (city_unit.m_id == 0)
