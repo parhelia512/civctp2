@@ -830,6 +830,10 @@ sint32 Agent::DisbandObsoleteUnits()
 		for (sint16 i = 0; i < city_list->Num(); i++)
 		{
 			city_unit = city_list->Access(i);
+
+			if(g_theWorld->GetCell(city_unit.RetPos())->GetNumUnits() == k_MAX_ARMY_SIZE)
+				continue;
+
 			distance = MapPoint::GetSquaredDistance(city_unit.RetPos(), pos);
 			if (distance < nearest_distance)
 			{
