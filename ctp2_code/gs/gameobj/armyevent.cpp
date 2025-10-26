@@ -1161,7 +1161,7 @@ STDEHANDLER(AftermathEvent)
 			army[i].SetFlag(k_UDF_FIRST_MOVE);
 		}
 //		g_director->IncrementPendingGameActions();
-		g_gevManager->AddEvent(GEV_INSERT_AfterCurrent, GEV_VictoryMoveOrder,
+		g_gevManager->AddEvent(GEV_INSERT_Tail, GEV_VictoryMoveOrder,
 							   GEA_Army, army,
 							   GEA_MapPoint, pos,
 							   GEA_End);
