@@ -10293,8 +10293,8 @@ void ArmyData::CharacterizeArmy
 		cancapture          |= !rec->GetCantCaptureCity();
 		haszoc              |= !rec->GetNoZoc();
 		canbombard          |= (rec->GetCanBombard() != 0x0);
-		canthrowparty       |= rec->GetThrowParty();
-		canestablishembassy |= rec->GetEstablishEmbassy();
+		canthrowparty       |=  rec->GetThrowParty();
+		canestablishembassy |=  rec->GetEstablishEmbassy();
 
 		maxattack            = std::max(maxattack,  static_cast<sint32>(rec->GetAttack()));
 		maxdefense           = std::max(maxdefense, static_cast<sint32>(rec->GetDefense()));
@@ -10366,8 +10366,8 @@ void ArmyData::CharacterizeCargo
 				cancapture          |= !rec->GetCantCaptureCity();
 				haszoc              |= !rec->GetNoZoc();
 				canbombard          |= (rec->GetCanBombard() != 0x0);
-				canthrowparty       |= !rec->GetThrowParty();
-				canestablishembassy |= !rec->GetEstablishEmbassy();
+				canthrowparty       |=  rec->GetThrowParty();
+				canestablishembassy |=  rec->GetEstablishEmbassy();
 
 				maxattack            = std::max(maxattack,  static_cast<sint32>(rec->GetAttack()));
 				maxdefense           = std::max(maxdefense, static_cast<sint32>(rec->GetDefense()));
