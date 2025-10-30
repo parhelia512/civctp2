@@ -3981,8 +3981,8 @@ bool Goal::GotoGoalTaskSolution(Agent_ptr the_army, MapPoint & goal_pos)
 			if (!found)
 			{
 				AI_DPRINTF(k_DBG_SCHEDULER, m_playerId, m_goal_type, the_army->Get_Army().m_id,
-				           ("GOAL %x (%s): GotoGoalTaskSolution: No path found from army (x=%d,y=%d) to goal (x=%d,y=%d) (SUB_TASK_GOAL):\n",
-				            this, g_theGoalDB->Get(m_goal_type)->GetNameText(), the_army->Get_Pos().x, the_army->Get_Pos().y, goal_pos.x, goal_pos.y));
+				           ("GOAL %x (%s): GotoGoalTaskSolution: No path found from army %s (x=%d,y=%d) to goal (x=%d,y=%d) (SUB_TASK_GOAL):\n",
+				            this, g_theGoalDB->Get(m_goal_type)->GetNameText(), the_army->Get_Army()->GetName(), the_army->Get_Pos().x, the_army->Get_Pos().y, goal_pos.x, goal_pos.y));
 				the_army->Log_Debug_Info(k_DBG_SCHEDULER, this);
 				uint8 magnitude = 220;
 				MBCHAR * myString = new MBCHAR[256];
@@ -4011,8 +4011,8 @@ bool Goal::GotoGoalTaskSolution(Agent_ptr the_army, MapPoint & goal_pos)
 			if (!found)
 			{
 				AI_DPRINTF(k_DBG_SCHEDULER, m_playerId, m_goal_type, the_army->Get_Army().m_id,
-				           ("GOAL %x (%d):GotoGoalTaskSolution: No path found from army (x=%d,y=%d) to goal (x=%d,y=%d) (SUB_TASK_RALLY):\n",
-				           this, m_goal_type, the_army->Get_Pos().x, the_army->Get_Pos().y, goal_pos.x, goal_pos.y));
+				           ("GOAL %x (%d):GotoGoalTaskSolution: No path found from army %s (x=%d,y=%d) to goal (x=%d,y=%d) (SUB_TASK_RALLY):\n",
+				           this, m_goal_type, the_army->Get_Army()->GetName(), the_army->Get_Pos().x, the_army->Get_Pos().y, goal_pos.x, goal_pos.y));
 				the_army->Log_Debug_Info(k_DBG_SCHEDULER, this);
 				uint8 magnitude = 220;
 				MBCHAR * myString = new MBCHAR[256];
@@ -4028,8 +4028,8 @@ bool Goal::GotoGoalTaskSolution(Agent_ptr the_army, MapPoint & goal_pos)
 			if (!found)
 			{
 				AI_DPRINTF(k_DBG_SCHEDULER, m_playerId, m_goal_type, the_army->Get_Army().m_id,
-				           ("GOAL %x (%d):GotoGoalTaskSolution: No path found from army (x=%d,y=%d) to goal (x=%d,y=%d) (SUB_TASK_TRANSPORT):\n",
-				           this, m_goal_type, the_army->Get_Pos().x, the_army->Get_Pos().y, goal_pos.x, goal_pos.y));
+				           ("GOAL %x (%d):GotoGoalTaskSolution: No path found from army %s (x=%d,y=%d) to goal (x=%d,y=%d) (SUB_TASK_TRANSPORT):\n",
+				           this, m_goal_type, the_army->Get_Pos().x, the_army->Get_Army()->GetName(), the_army->Get_Pos().y, goal_pos.x, goal_pos.y));
 				the_army->Log_Debug_Info(k_DBG_SCHEDULER, this);
 				uint8 magnitude = 220;
 				MBCHAR * myString = new MBCHAR[256];
@@ -4441,6 +4441,7 @@ bool Goal::RallyTroops()
 	if(rallyPos == rallyAgent->Get_Pos()
 	&& rallyAgent->Get_Army()->HasCargo()
 	&& rallyAgent->CargoCanEnter()
+	&& rallyAgent->Get_Can_Be_Executed()
 	){
 		rallyAgent->UnloadCargo();
 	}
