@@ -908,16 +908,13 @@ bool World::GetAdjacentLand(MapPoint const & pos, MapPoint & land) const
 	return false;
 }
 
-bool World::IsNextToForeignerOnLand(const MapPoint &pos, PLAYER_INDEX owner) const
+bool World::IsNextToForeigner(const MapPoint &pos, PLAYER_INDEX owner) const
 {
 	MapPoint next;
 	for(sint16 dir = 0; dir < NOWHERE; ++dir)
 	{
 		if(pos.GetNeighborPosition(static_cast<WORLD_DIRECTION>(dir), next))
 		{
-			if(IsWater(next))
-				continue;
-
 			Cell * cell = g_theWorld->GetCell(next);
 
 			if(cell->GetNumUnits() > 0

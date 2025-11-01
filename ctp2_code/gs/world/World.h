@@ -504,7 +504,7 @@ public:
     BOOL IsCellZoc(const PLAYER_INDEX &owner, const MapPoint &pos, const BOOL is_check_only_visible);
     BOOL IsMoveZOC(PLAYER_INDEX owner, const MapPoint &start, const MapPoint &dest,
         const BOOL is_check_only_visible);
-    bool IsNextToForeignerOnLand(const MapPoint &pos, PLAYER_INDEX owner) const;
+    bool IsNextToForeigner(const MapPoint &pos, PLAYER_INDEX owner) const;
     bool IsOccupiedByForeigner(const MapPoint &pos, PLAYER_INDEX owner) const;
 
 
