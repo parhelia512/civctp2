@@ -1773,6 +1773,16 @@ Utility Goal::Compute_Agent_Matching_Value(const Agent_ptr agent_ptr) const
 	double eta = agent_ptr->GetRoundsPrecise(point, squared_distance);
 	double cell_dist = sqrt(static_cast<double>(squared_distance));
 
+	if(agent_ptr->Get_Army()->HasCargo())
+	{
+		// If it is about the cargo, we need another turn to unload
+		eta += 1.0;
+#if defined(_DEBUG) || defined(USE_LOGGING)
+		// Maybe this is of some use later
+		is_transporter = true;
+#endif
+	}
+
 	Utility raw_priority = Get_Raw_Priority();
 
 	const StrategyRecord & strategy =
