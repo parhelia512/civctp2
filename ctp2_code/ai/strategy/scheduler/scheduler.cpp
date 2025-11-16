@@ -685,7 +685,6 @@ void Scheduler::Match_Resources(const bool move_armies)
 				("\t\tGOAL (goal: %x)(agent count: %d) -- Goal with bad utility, trying agian in next cycle.\n",
 						goal_ptr, goal_ptr->Get_Agent_Count()));
 
-	//		Assert(goal_ptr->Get_Agent_Count() == 0); // Is still ok
 			// City garrison problem
 			goal_ptr->Rollback_All_Agents(); // Just roll back but don't report to the build list
 
@@ -712,8 +711,6 @@ void Scheduler::Match_Resources(const bool move_armies)
 
 			Goal_List::iterator tmp_goal_iter = goal_iter;
 			++tmp_goal_iter;
-
-	//		Assert(goal_ptr->Get_Agent_Count() == 0);
 
 			if(tmp_goal_iter != m_goals.end())
 			{
@@ -1461,6 +1458,8 @@ bool Scheduler::Prune_Goals()
 
 			if(ok_to_match_goal)
 			{
+				AI_DPRINTF(k_DBG_SCHEDULER_DETAIL, m_playerId, goal_type, -1,
+					("\t%3d: [%x] of %s is being added.\n", goals_added, goal_ptr_iter->second, g_theGoalDB->GetNameStr(goal_type)));
 				if(goal_ptr->Get_Matches_Num() == 0)
 				{
 					Add_New_Matches_For_Goal(goal_ptr); // This consumes the most time, but it seems this cannot be improved.
@@ -1471,8 +1470,9 @@ bool Scheduler::Prune_Goals()
 				m_goals.push_back(goal_ptr);
 
 				AI_DPRINTF(k_DBG_SCHEDULER_DETAIL, m_playerId, goal_type, -1,
-					("\t%3d: [%x] of %s is added.", goals_added, goal_ptr_iter->second, g_theGoalDB->GetNameStr(goal_type)));
+					("\t%3d: [%x] of %s has been added.", goals_added, goal_ptr_iter->second, g_theGoalDB->GetNameStr(goal_type)));
 				goal_ptr_iter->second->Log_Debug_Info(k_DBG_SCHEDULER_DETAIL);
+				AI_DPRINTF(k_DBG_SCHEDULER_DETAIL, m_playerId, goal_type, -1, ("\n"));
 
 				goals_added++;
 				goal_ptr_iter++;
@@ -2153,7 +2153,7 @@ void Scheduler::Assign_Garrison()
 	{
 		Unit city = g_player[m_playerId]->GetCityFromIndex(i);
 
-		garrisonAgents[i].sort();
+		garrisonAgents[i].sort(std::greater<>());
 
 		sint8  needed_garrison           = city.CD()->GetNeededGarrison();
 		double needed_garrison_strength  = city.CD()->GetNeededGarrisonStrength();
@@ -2174,20 +2174,21 @@ void Scheduler::Assign_Garrison()
 			   || current_garrison          < needed_garrison
 			  )
 			{
-				AI_DPRINTF(k_DBG_SCHEDULER_DETAIL, m_playerId, -1, -1,("%9x\t %9x\t GarrisonStrength: %9.1f / %9.1f GarrisonNum %2d / %2d (%2d units) needed for garrison in %s\n",
+				current_garrison_strength += agent_iter->first;
+				current_garrison          += agent_iter->second->Get_Army()->Num();
+
+				agent_iter->second->SetIsNeededForGarrison(true);
+
+				AI_DPRINTF(k_DBG_SCHEDULER_DETAIL, m_playerId, -1, -1,("%9x\t %9x\t Defense: %9.1f GarrisonStrength: %9.1f / %9.1f GarrisonNum %2d / %2d (%2d units) needed for garrison in %s\n",
 				                                                       agent_iter->second,
 				                                                       agent_iter->second->Get_Army().m_id,
+				                                                       agent_iter->first,
 				                                                       current_garrison_strength,
 				                                                       needed_garrison_strength,
 				                                                       current_garrison,
 				                                                       needed_garrison,
 				                                                       agent_iter->second->Get_Army()->Num(),
 				                                                       city.GetName()));
-
-				current_garrison_strength += agent_iter->first;
-				current_garrison          += agent_iter->second->Get_Army()->Num();
-
-				agent_iter->second->SetIsNeededForGarrison(true);
 
 				if(agent_iter->second->Has_Any_Goal())
 				{
