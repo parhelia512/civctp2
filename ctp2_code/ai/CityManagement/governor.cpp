@@ -3326,7 +3326,7 @@ void Governor::ComputeDesiredUnits()
 		}
 		else
 		{
-			DPRINTF(k_DBG_AI, ("// List %d, Best unit: %s, current: %d, needed: %d, max: %d, garrison: %d, garrison max: %d, per city: %d \n", list_num, "Invalid", m_currentUnitCount[type], needed, max, garrison, garrisonMax, perCity));
+			DPRINTF(k_DBG_AI, ("// List %d, Best unit: %s, current: %d, needed: %d, max: %d, garrison: %d, garrison max: %d, per city: %d \n", list_num, "Invalid", -1, needed, max, garrison, garrisonMax, perCity));
 		}
 	}
 #endif
