@@ -172,7 +172,7 @@ Goal::Goal(const Goal &goal)
     m_current_attacking_strength    (0),                         // Nothing since the agent list is not copied
     m_matches                       (),                          // Contains refernces that are invalid after copy
     m_agents                        (),                          // Agents are just pointers, which are changed on copy
-    m_sub_goal                      (goal.m_sub_goal),
+    m_sub_goal                      (nullptr),                   // Might be invalid after copying
     m_raw_priority                  (goal.m_raw_priority),
     m_combinedUtility               (goal.m_combinedUtility),
     m_target_pos                    (goal.m_target_pos),

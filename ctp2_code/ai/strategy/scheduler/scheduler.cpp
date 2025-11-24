@@ -218,6 +218,8 @@ Scheduler::Scheduler(const Scheduler &scheduler)
 			++sorted_goal_iter;
 		}
 	}
+
+	Associate_Goals_With_Sub_Goals();
 }
 
 Scheduler::~Scheduler()
