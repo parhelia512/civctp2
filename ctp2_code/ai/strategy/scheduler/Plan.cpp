@@ -317,7 +317,7 @@ void Plan::Commit_Agent_Common(Goal_ptr goal_ptr)
 	if
 	  (
 	       m_matching_value > Goal::BAD_UTILITY
-	   &&(!m_the_agent->Has_Any_Goal() || m_the_agent->Has_Goal(goal_ptr->GetSubGoal())) // No worry about the subgoal is NULL, sunce agent goal cannot be NULL, anymore.
+	   &&(!m_the_agent->Has_Any_Goal() || m_the_agent->Has_Goal(goal_ptr->GetSubGoal())) // No worry about the subgoal is NULL, since agent goal cannot be NULL, anymore.
 	   &&  m_the_agent->Get_Can_Be_Executed()
 	  )
 	{
