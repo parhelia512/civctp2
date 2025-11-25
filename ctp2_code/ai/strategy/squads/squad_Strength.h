@@ -71,8 +71,8 @@ public:
 	Squad_Strength & operator+=(const Squad_Strength & add_me);
 	Squad_Strength & operator-=(const Squad_Strength & remove_me);
 
-	sint8 Get_Agent_Count()                    const { return m_unit_count;  };
-	void  Set_Agent_Count(const sint32 & count)      { m_unit_count = count; };
+	sint8 Get_Unit_Count()                    const { return m_unit_count;  };
+	void  Set_Unit_Count(const sint32 & count)      { m_unit_count = count; };
 
 	void Add_Agent_Strength(const Agent_ptr & agent);
 	void Remove_Agent_Strength(const Agent_ptr & agent);

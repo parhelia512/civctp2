@@ -228,7 +228,7 @@ bool Goal::Is_Satisfied() const
 	// Limitation of army size: Cannot form a group with more
 	// armies than the max (without that limitation, it can
 	// disturb the goals with RallyFirst() - Calvitix
-//	if (m_current_attacking_strength.Get_Agent_Count() == k_MAX_ARMY_SIZE)
+//	if (m_current_attacking_strength.Get_Unit_Count() == k_MAX_ARMY_SIZE)
 //		return true;
 
 	if(g_theGoalDB->Get(m_goal_type)->GetNeverSatisfied())
@@ -288,7 +288,8 @@ void Goal::Commit_Agent(const Agent_ptr & agent)
 			Assert(agent->Get_Goal() == m_sub_goal);
 		}
 
-		Assert(m_current_attacking_strength.Get_Agent_Count() >= static_cast<sint8>(Get_Agent_Count()));
+		// That is starange
+		Assert(m_current_attacking_strength.Get_Unit_Count() >= static_cast<sint8>(Get_Agent_Count()));
 	}
 }
 
@@ -338,7 +339,8 @@ void Goal::Rollback_Agent(Agent_List::iterator & agent_iter)
 
 	agent_iter = m_agents.erase(agent_iter);
 
-	Assert(m_current_attacking_strength.Get_Agent_Count() >= static_cast<sint8>(Get_Agent_Count()));
+	// That is starange
+	Assert(m_current_attacking_strength.Get_Unit_Count() >= static_cast<sint8>(Get_Agent_Count()));
 
 	agent_ptr->Set_Goal(NULL);
 }
@@ -431,12 +433,12 @@ bool Goal::Satisfied_By(const Squad_Strength & army_strength) const
 	}
 
 	//Check if the army has too much units to fit in one tile - Calvitix
-	if (m_current_attacking_strength.Get_Agent_Count() +
-		army_strength.Get_Agent_Count() > k_MAX_ARMY_SIZE)
+	if (m_current_attacking_strength.Get_Unit_Count() +
+		army_strength.Get_Unit_Count() > k_MAX_ARMY_SIZE)
 		return false;
 
-	if ((needed_strength.Get_Agent_Count() > 0) &&
-		(army_strength.Get_Agent_Count() > 0))
+	if ((needed_strength.Get_Unit_Count() > 0) &&
+		(army_strength.Get_Unit_Count() > 0))
 		return true;
 
 	if ((needed_strength.Get_Attack() > 0) &&
@@ -589,7 +591,7 @@ Utility Goal::Mark_For_Garrison(Plan_List & matches)
 			continue;
 
 		if(!projected_strength.HasEnough(m_current_needed_strength)
-		&&  projected_strength.Get_Agent_Count() < m_current_needed_strength.Get_Agent_Count()
+		&&  projected_strength.Get_Unit_Count() < m_current_needed_strength.Get_Unit_Count()
 		){
 			Utility matchUtility = match_iter->Get_Matching_Value();
 
@@ -682,7 +684,7 @@ Utility Goal::Mark_For_Garrison(Plan_List & matches)
 			("\t\t[%3d] Enough ressources found for goal %s\n", count, g_theGoalDB->Get(m_goal_type)->GetNameText()));
 	}
 	else if(!projected_strength.HasEnough(m_current_needed_strength)
-	     &&  projected_strength.Get_Agent_Count() >= m_current_needed_strength.Get_Agent_Count()
+	     &&  projected_strength.Get_Unit_Count() >= m_current_needed_strength.Get_Unit_Count()
 	){
 		AI_DPRINTF(k_DBG_SCHEDULER_DETAIL, m_playerId, m_goal_type, -1,
 			("\t\t[%3d] Maximum number of units found, use ressources for other goals than %s\n", count, g_theGoalDB->Get(m_goal_type)->GetNameText()));
@@ -758,7 +760,7 @@ Utility Goal::Recompute_Matching_Value(Plan_List & matches, const bool update)
 			continue;
 
 		if( isGarrison && !projected_strength.HasEnough(m_current_needed_strength)
-		&&                 projected_strength.Get_Agent_Count() < m_current_needed_strength.Get_Agent_Count()
+		&&                 projected_strength.Get_Unit_Count() < m_current_needed_strength.Get_Unit_Count()
 		|| !isGarrison && !projected_strength.HasEnough(m_current_needed_strength)
 //		||  goal_record->GetNeverSatisfied() // Should be considered in Commit_Agents
 		){
@@ -815,7 +817,7 @@ Utility Goal::Recompute_Matching_Value(Plan_List & matches, const bool update)
 	}
 	else if( isGarrison
 	     && !projected_strength.HasEnough(m_current_needed_strength)
-	     &&  projected_strength.Get_Agent_Count() >= m_current_needed_strength.Get_Agent_Count()
+	     &&  projected_strength.Get_Unit_Count() >= m_current_needed_strength.Get_Unit_Count()
 	){
 		AI_DPRINTF(k_DBG_SCHEDULER_DETAIL, m_playerId, m_goal_type, -1,
 			("\t\t[%3d] Maximum number of units found, use ressources for other goals than %s\n", count, g_theGoalDB->Get(m_goal_type)->GetNameText()));
@@ -993,7 +995,7 @@ void Goal::Commit_Agents()
 		}
 		else if(Is_Satisfied()
 		     || IsTotallyComplete()
-		     || isGarrison && m_current_attacking_strength.Get_Agent_Count() >= m_current_needed_strength.Get_Agent_Count()
+		     || isGarrison && m_current_attacking_strength.Get_Unit_Count() >= m_current_needed_strength.Get_Unit_Count()
 		){
 			AI_DPRINTF(k_DBG_SCHEDULER_DETAIL, m_playerId, m_goal_type, -1,
 				("\t\tNO MORE AGENTS NEEDED:           (goal: %x agent: %x, id: 0%x)\n", this, match_iter->Get_Agent(), match_iter->Get_Agent()->Get_Army().m_id));
@@ -1564,7 +1566,7 @@ void Goal::Compute_Needed_Troop_Flow()
 		// affected to relevant goals
 		if(goal_record->GetTreaspassingArmyBonus() > 0)
 		{
-			m_current_needed_strength.Set_Agent_Count(2);
+			m_current_needed_strength.Set_Unit_Count(2);
 		}
 		else
 		{
@@ -1593,7 +1595,7 @@ void Goal::Compute_Needed_Troop_Flow()
 			m_current_needed_strength.Set_Ranged_Units(static_cast<sint8>(ranged_garrison));
 
 			if(goal_record->GetIsGarrison() && m_target_city.IsValid())
-				m_current_needed_strength.Set_Agent_Count(m_target_city.CD()->GetNeededGarrison());
+				m_current_needed_strength.Set_Unit_Count(m_target_city.CD()->GetNeededGarrison());
 		}
 	}
 	else if
@@ -1622,11 +1624,11 @@ void Goal::Compute_Needed_Troop_Flow()
 		if
 		  (
 		       Get_Target_Owner() != 0
-		    || strength.Get_Agent_Count() > 0
+		    || strength.Get_Unit_Count() > 0
 		  )
 		{
 			// Set this to zero, since how many units we need doesn't depent on the number of units at the target.
-			strength.Set_Agent_Count(0);
+			strength.Set_Unit_Count(0);
 			strength.Set_Defenders(0);
 			strength.Set_Ranged_Units(0);
 			m_current_needed_strength += strength;
@@ -2758,7 +2760,7 @@ GOAL_RESULT Goal::Execute_Task()
 			      MapPoint::GetSquaredDistance(target__pos, current_pos) <= 1
 			   && (
 			           agent_ptr->Get_Army()->Num() > (2*k_MAX_ARMY_SIZE/3)
-			        || agent_ptr->Get_Army()->Num() > m_current_attacking_strength.Get_Agent_Count()
+			        || agent_ptr->Get_Army()->Num() > m_current_attacking_strength.Get_Unit_Count()
 			      )
 			  )
 			{
@@ -5203,7 +5205,7 @@ bool Goal::Goal_Too_Expensive() const
 #if defined(_DEBUG) || defined(USE_LOGGING)
 	if(    (g_theGoalDB->Get(m_goal_type)->GetTargetOwnerSelf()
 	    &&  g_theGoalDB->Get(m_goal_type)->GetTargetTypeCity()
-	    &&  m_current_attacking_strength.Get_Agent_Count() > k_MAX_ARMY_SIZE)
+	    &&  m_current_attacking_strength.Get_Unit_Count() > k_MAX_ARMY_SIZE)
 	    && (m_current_attacking_strength.Get_Value() >
 	            m_current_needed_strength.Get_Value() * 3
 	       )
@@ -5211,13 +5213,13 @@ bool Goal::Goal_Too_Expensive() const
 	{
 		AI_DPRINTF(k_DBG_SCHEDULER, m_playerId, m_goal_type, -1,
 			("\t\tGOAL (goal: %x of %s) too expensive, agent count %d, current value %f, needed value %f\n",
-			 this, g_theGoalDB->Get(m_goal_type)->GetNameText(), m_current_attacking_strength.Get_Agent_Count(), m_current_attacking_strength.Get_Value(), m_current_needed_strength.Get_Value()));
+			 this, g_theGoalDB->Get(m_goal_type)->GetNameText(), m_current_attacking_strength.Get_Unit_Count(), m_current_attacking_strength.Get_Value(), m_current_needed_strength.Get_Value()));
 	}
 #endif
 
 	return (g_theGoalDB->Get(m_goal_type)->GetTargetOwnerSelf()
 	    &&  g_theGoalDB->Get(m_goal_type)->GetTargetTypeCity()
-	    &&  m_current_attacking_strength.Get_Agent_Count() > k_MAX_ARMY_SIZE)
+	    &&  m_current_attacking_strength.Get_Unit_Count() > k_MAX_ARMY_SIZE)
 	    && (m_current_attacking_strength.Get_Value() >
 	            m_current_needed_strength.Get_Value() * 3
 	       );

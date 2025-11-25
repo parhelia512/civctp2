@@ -146,7 +146,7 @@ void Squad_Strength::Add_Agent_Strength(const Agent_ptr & agent)
 
 void Squad_Strength::Remove_Agent_Strength(const Agent_ptr & agent)
 {
-	Assert(Get_Agent_Count() > 0);
+	Assert(Get_Unit_Count() > 0);
 	(*this) -= agent->Get_Squad_Strength();
 	Assert(m_transport >= 0);
 }
