@@ -459,7 +459,9 @@ void Scheduler::Process_Goal_Changes()
 	SetIsAllyRegardCache(m_playerId);
 	AI_DPRINTF(k_DBG_SCHEDULER, m_playerId, -1, -1, ("//  Process goal changes:     Elapsed time = %d ms\n", (GetTickCount() - t1)));
 
-	Prioritize_Goals();
+	Raw_Prioritize_Goals(); // Computes raw priorities
+	Assign_Garrison();      // For the new garrison asignment, we need the rew priorities
+	Prioritize_Goals();     // Computes combined priorities
 	AI_DPRINTF(k_DBG_SCHEDULER, m_playerId, -1, -1, ("//  Prioritize goal changes:  Elapsed time = %d ms\n", (GetTickCount() - t1)));
 
 	SetContactCache(-1);
@@ -1238,7 +1240,7 @@ size_t Scheduler::CountGoalsOfType(const GOAL_TYPE & type) const
 
 //////////////////////////////////////////////////////////////////////////
 //
-//  Prioritize_Goals
+//  Raw_Prioritize_Goals
 //
 //  Called by Process_Goal_Changes
 //
@@ -1247,13 +1249,10 @@ size_t Scheduler::CountGoalsOfType(const GOAL_TYPE & type) const
 //
 //  2. Remove all invalid/complete goals from goals_of_class list.
 //
-//  3. Recompute raw priority of all new/changed goals from
-//     sorted_goals_of_class list.
-//
-//  4. Sort goals_of_class lists.
+//  3. Remove old matches and add new matches for generic goals
 //
 //////////////////////////////////////////////////////////////////////////
-bool Scheduler::Prioritize_Goals()
+void Scheduler::Raw_Prioritize_Goals()
 {
 	time_t t1 = GetTickCount();
 
@@ -1261,21 +1260,19 @@ bool Scheduler::Prioritize_Goals()
 
 	Sorted_Goal_Iter sorted_goal_iter;
 
-	sint32 goal_type;
-
-	for(goal_type = 0; goal_type < g_theGoalDB->NumRecords(); goal_type++)
+	for(sint32 goal_type = 0; goal_type < g_theGoalDB->NumRecords(); goal_type++)
 	{
-		AI_DPRINTF(k_DBG_SCHEDULER, m_playerId, goal_type, -1,("\n"));
-		AI_DPRINTF(k_DBG_SCHEDULER, m_playerId, goal_type, -1,("\n"));
-		AI_DPRINTF(k_DBG_SCHEDULER, m_playerId, goal_type, -1,("//\n"));
-		AI_DPRINTF(k_DBG_SCHEDULER, m_playerId, goal_type, -1,("// Calculate raw priority for %d goals of %s\n", m_goals_of_type[goal_type].size(), g_theGoalDB->Get(goal_type)->GetNameText()));
-		AI_DPRINTF(k_DBG_SCHEDULER, m_playerId, goal_type, -1,("//\n"));
-		AI_DPRINTF(k_DBG_SCHEDULER, m_playerId, goal_type, -1,("\n"));
+		AI_DPRINTF(k_DBG_SCHEDULER, m_playerId, goal_type, -1, ("\n"));
+		AI_DPRINTF(k_DBG_SCHEDULER, m_playerId, goal_type, -1, ("\n"));
+		AI_DPRINTF(k_DBG_SCHEDULER, m_playerId, goal_type, -1, ("//\n"));
+		AI_DPRINTF(k_DBG_SCHEDULER, m_playerId, goal_type, -1, ("// Calculate raw priority for %d goals of %s\n", m_goals_of_type[goal_type].size(), g_theGoalDB->Get(goal_type)->GetNameText()));
+		AI_DPRINTF(k_DBG_SCHEDULER, m_playerId, goal_type, -1, ("//\n"));
+		AI_DPRINTF(k_DBG_SCHEDULER, m_playerId, goal_type, -1, ("\n"));
 		AI_DPRINTF(k_DBG_SCHEDULER, m_playerId, goal_type, -1,
 			("\t %9x,\tGOAL,\t\tRAW_PRIORITY,\t\tCOORDS,\t\tINIT_VALUE,\t\tLAST_VALUE,\t\tTHREAT,\t\tENEMYVAL,\tALLIEDVAL,\tMAXPOW,\t\tHOMEDIST\t   (       ),\tENEMYDIST    (       ),\t\tSETTLE,\t\tCHOKE,\t\tUNEXPLORED,\tNOT_VISIBLE,\tIN_HOME_TER,\tIN_ENEMY_TER,\tON_NEUT_TER,\tSLAVERY_PROTECTION,\tSMALL_CITY,\tTHREATEN,\tCONNECTED,\tSMALL_EMP,\tWEAKEST,\tPLACE\n",
-		this));
+				this));
 
-		      sorted_goal_iter  = m_goals_of_type[goal_type].begin();
+		sorted_goal_iter = m_goals_of_type[goal_type].begin();
 		while(sorted_goal_iter != m_goals_of_type[goal_type].end())
 		{
 			Goal_ptr goal_ptr = sorted_goal_iter->second;
@@ -1307,12 +1304,12 @@ bool Scheduler::Prioritize_Goals()
 					goal_ptr->Compute_Needed_Troop_Flow();
 
 					if
-					  (
-					       first_turn_of_war
-					    || m_playerId == 0
-					    || goal_ptr->CanGoalBeReevaluated()
-					    || goal_ptr->Commited_Agents_Need_Orders()
-					  )
+						(
+							first_turn_of_war
+							|| m_playerId == 0
+							|| goal_ptr->CanGoalBeReevaluated()
+							|| goal_ptr->Commited_Agents_Need_Orders()
+							)
 					{
 						goal_ptr->Rollback_All_Agents();
 					}
@@ -1337,13 +1334,45 @@ bool Scheduler::Prioritize_Goals()
 
 	time_t t2 = GetTickCount();
 
-	AI_DPRINTF(k_DBG_SCHEDULER, m_playerId, goal_type, -1, ("//  Raw goal priorities calculated:\n"));
-	AI_DPRINTF(k_DBG_SCHEDULER, m_playerId, goal_type, -1, ("//  elapsed time = %d ms\n\n", (t2 - t1)  ));
+	AI_DPRINTF(k_DBG_SCHEDULER, m_playerId, -1, -1, ("//  Raw goal priorities calculated:\n"));
+	AI_DPRINTF(k_DBG_SCHEDULER, m_playerId, -1, -1, ("//  elapsed time = %d ms\n\n", (t2 - t1)));
+
 	t1 = GetTickCount();
+	Goal_Vector::iterator generic_goal_iter = m_generic_goals.begin();
+
+	for(sint32 goal_type = 0; goal_type < g_theGoalDB->NumRecords(); goal_type++)
+	{
+		Remove_Matches_For_Goal(*generic_goal_iter); // Expensive
+		AI_DPRINTF(k_DBG_SCHEDULER, m_playerId, goal_type, -1, ("//  Remove generic matches:             Elapsed time = %d ms\n", (t2 - t1)));
+		t2 = GetTickCount();
+		Add_New_Matches_For_Goal(*generic_goal_iter, false);
+		AI_DPRINTF(k_DBG_SCHEDULER, m_playerId, goal_type, -1, ("//  Add new generic matches:            Elapsed time = %d ms\n\n", (t2 - t1)));
+		t2 = GetTickCount();
+		++generic_goal_iter;
+	}
+}
+
+//////////////////////////////////////////////////////////////////////////
+//
+//  Prioritize_Goals
+//
+//  Called by Process_Goal_Changes
+//
+//  1. Recompute raw priority of all new/changed goals from
+//     sorted_goals_of_class list.
+//
+//  2. Sort goals_of_class lists.
+//
+//////////////////////////////////////////////////////////////////////////
+void Scheduler::Prioritize_Goals()
+{
+	Sorted_Goal_Iter sorted_goal_iter;
+	time_t t1 = GetTickCount();
+	time_t t2;
 
 	Goal_Vector::iterator generic_goal_iter = m_generic_goals.begin();
 
-	for(goal_type = 0; goal_type < g_theGoalDB->NumRecords(); goal_type++)
+	for(sint32 goal_type = 0; goal_type < g_theGoalDB->NumRecords(); goal_type++)
 	{
 		AI_DPRINTF(k_DBG_SCHEDULER, m_playerId, goal_type, -1,("\n"));
 		AI_DPRINTF(k_DBG_SCHEDULER, m_playerId, goal_type, -1,("\n"));
@@ -1354,13 +1383,6 @@ bool Scheduler::Prioritize_Goals()
 //		AI_DPRINTF(k_DBG_SCHEDULER, m_playerId, goal_type, -1,
 //		("\t %9x,\tGOAL\t\t,\tRAW_PRIORITY,\tCOORDS\t,\tINIT_VALUE,\tLAST_VALUE,\tTHREAT,\t\tENEMYVAL,\tALLIEDVAL,\tMAXPOW,\t\tHOMEDIST\t(   )\t,\tENEMYDIST (    ),\t\tSETTLE,\t\tCHOKE,\t\tUNEXPLORED,\tNOT_VISIBLE,\tTHREATEN\n",
 //		this));
-
-		Remove_Matches_For_Goal(*generic_goal_iter); // Expensive
-		AI_DPRINTF(k_DBG_SCHEDULER, m_playerId, goal_type, -1, ("//  Remove matches:             Elapsed time = %d ms\n", (t2 - t1)));
-		t2 = GetTickCount();
-		Add_New_Matches_For_Goal(*generic_goal_iter, false);
-		AI_DPRINTF(k_DBG_SCHEDULER, m_playerId, goal_type, -1, ("//  Add new matches:            Elapsed time = %d ms\n", (t2 - t1)));
-		t2 = GetTickCount();
 
 		for
 		(
@@ -1397,8 +1419,8 @@ bool Scheduler::Prioritize_Goals()
 			}
 		}
 
-		AI_DPRINTF(k_DBG_SCHEDULER, m_playerId, goal_type, -1, ("//  Recalculate match value:    Elapsed time = %d ms\n", (t2 - t1)));
 		t2 = GetTickCount();
+		AI_DPRINTF(k_DBG_SCHEDULER, m_playerId, goal_type, -1, ("//  Recalculate match value:    Elapsed time = %d ms\n", (t2 - t1)));
 
 		// Most time is spend here at sorting.
 		m_goals_of_type[goal_type].sort(std::greater<Sorted_Goal_ptr>());
@@ -1415,10 +1437,8 @@ bool Scheduler::Prioritize_Goals()
 	}
 
 	t2 = GetTickCount();
-	AI_DPRINTF(k_DBG_SCHEDULER, m_playerId, goal_type, -1, ("//  Goals sorted:\n"));
-	AI_DPRINTF(k_DBG_SCHEDULER, m_playerId, goal_type, -1, ("//  elapsed time = %d ms\n\n", (t2 - t1)  ));
-
-	return true;
+	AI_DPRINTF(k_DBG_SCHEDULER, m_playerId, -1, -1, ("//  Goals sorted:\n"));
+	AI_DPRINTF(k_DBG_SCHEDULER, m_playerId, -1, -1, ("//  elapsed time = %d ms\n\n", (t2 - t1)  ));
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -1510,7 +1530,7 @@ bool Scheduler::Prune_Goals()
 				m_goals.push_back(goal_ptr);
 
 				AI_DPRINTF(k_DBG_SCHEDULER_DETAIL, m_playerId, goal_type, -1,
-					("\t%3d: [%x] of %s has been added.", goals_added, goal_ptr_iter->second, g_theGoalDB->GetNameStr(goal_type)));
+					("\t%3d: [%x] of %s has been added.\n", goals_added, goal_ptr_iter->second, g_theGoalDB->GetNameStr(goal_type)));
 				goal_ptr_iter->second->Log_Debug_Info(k_DBG_SCHEDULER_DETAIL);
 				AI_DPRINTF(k_DBG_SCHEDULER_DETAIL, m_playerId, goal_type, -1, ("\n"));
 
@@ -2111,6 +2131,114 @@ void Scheduler::ResetTransport()
 }
 
 void Scheduler::Assign_Garrison()
+{
+	sint32 garrisonIndex = -1;
+	sint32 forceGarrison = -1;
+	sint32 forceDefense = -1;
+	for(sint32 i = 0; i < g_theGoalDB->NumRecords(); ++i)
+	{
+		const GoalRecord* rec = g_theGoalDB->Get(i);
+
+		if(!rec->GetSquadClassCanDefend())
+			continue;
+
+		if(!rec->GetTargetOwnerSelf())
+			continue;
+
+		if(!rec->GetTargetTypeCity())
+			continue;
+
+		if(rec->GetForceMatchDefensive())
+		{
+			forceDefense = i;
+		}
+		else if(rec->GetForceMatchGarrison())
+		{
+			forceGarrison = i;
+		}
+
+		if(rec->GetIsGarrison())
+		{
+			garrisonIndex = i;
+			break;
+		}
+	}
+
+	Assert(garrisonIndex >= 0 || forceGarrison >= 0 || forceDefense >= 0);
+
+	if(garrisonIndex == -1 && forceGarrison >= 0)
+	{
+		garrisonIndex = forceGarrison;
+	}
+
+	if(garrisonIndex == -1 && forceDefense >= 0)
+	{
+		garrisonIndex = forceDefense;
+	}
+
+	// If everything fails use the old way to assign garrions
+	if(garrisonIndex == -1)
+	{
+		Old_Assign_Garrison();
+		return;
+	}
+
+	AI_DPRINTF(k_DBG_SCHEDULER, m_playerId, -1, -1,("//\n"));
+	AI_DPRINTF(k_DBG_SCHEDULER, m_playerId, -1, -1,("// Find armies for garrison\n"));
+	AI_DPRINTF(k_DBG_SCHEDULER, m_playerId, -1, -1,("//\n"));
+
+	for
+	(
+	    Agent_List::iterator agent_iter  = m_agents.begin();
+	                         agent_iter != m_agents.end();
+	                       ++agent_iter
+	)
+	{
+		Agent_ptr agent = (*agent_iter);
+
+		agent->SetIsNeededForGarrison(false);
+	}
+
+#if defined(_DEBUG) || defined(USE_LOGGING)
+	sint32 count = 0;
+#endif
+	Goal* generic_goal_ptr = m_generic_goals[garrisonIndex];
+
+	for
+	(
+	    Sorted_Goal_List::const_iterator
+	        sorted_goal_iter  = m_goals_of_type[garrisonIndex].begin();
+	        sorted_goal_iter != m_goals_of_type[garrisonIndex].end();
+	      ++sorted_goal_iter
+	)
+	{
+		Goal* goal_ptr = sorted_goal_iter->second;
+
+#if defined(_DEBUG) || defined(USE_LOGGING)
+		MapPoint pos = (goal_ptr->Get_Target_Army().m_id == 0 || goal_ptr->Get_Target_Army().IsValid()) ? goal_ptr->Get_Target_Pos() : MapPoint(-1, -1);
+		AI_DPRINTF(k_DBG_SCHEDULER, m_playerId, goal_ptr->Get_Goal_Type(), -1, ("\n"));
+		AI_DPRINTF(k_DBG_SCHEDULER, m_playerId, goal_ptr->Get_Goal_Type(), -1, ("\n"));
+		AI_DPRINTF(k_DBG_SCHEDULER, m_playerId, goal_ptr->Get_Goal_Type(), -1,
+			("[%d] Starting to match garrison resources with %s: %x (x=%d,y=%d), match %d, %s\n",
+				count, g_theGoalDB->Get(goal_ptr->Get_Goal_Type())->GetNameText(), goal_ptr, pos.x, pos.y, goal_ptr->Get_Matching_Value(), (g_theWorld->HasCity(pos) ? g_theWorld->GetCity(pos).GetName() : "field")));
+		count++;
+#endif
+		if (goal_ptr->Get_Matches_Num() > 0)
+		{
+			goal_ptr->Compute_Matching_Value(true, true);
+		}
+		else if (generic_goal_ptr->Get_Matches_Num() > 0)
+		{
+			goal_ptr->Compute_Matching_With_Generic_Matches(generic_goal_ptr, true);
+		}
+		else
+		{
+			Assert(false);
+		}
+	}
+}
+
+void Scheduler::Old_Assign_Garrison()
 {
 	sint32 cityNum = g_player[m_playerId]->GetNumCities();
 	Sorted_Agent_List_Vector garrisonAgents;

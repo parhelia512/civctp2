@@ -555,7 +555,6 @@ STDEHANDLER(CtpAi_BeginSchedulerEvent)
 
 	Scheduler & scheduler = Scheduler::GetScheduler(playerId);
 	scheduler.Process_Agent_Changes();
-	scheduler.Assign_Garrison();
 
 	scheduler.Reset_Agent_Execution();
 
@@ -566,7 +565,7 @@ STDEHANDLER(CtpAi_BeginSchedulerEvent)
 	DPRINTF(k_DBG_AI, ("// PROCESS GOAL CHANGES -- Turn %d\n", round));
 	DPRINTF(k_DBG_AI, ("//                         Player %d\n", playerId));
 
-	scheduler.Process_Goal_Changes();
+	scheduler.Process_Goal_Changes(); // Computes raw and combined priorities
 	DPRINTF(k_DBG_AI, ("//  elapsed time = %d ms\n", (GetTickCount() - t1)));
 
 	t1 = GetTickCount();

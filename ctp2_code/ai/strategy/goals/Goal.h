@@ -144,13 +144,14 @@ public:
 
     const Squad_Strength Get_Strength_Needed() const;
 
-    Utility Compute_Matching_With_Generic_Matches(Goal_ptr generic_goal, const bool update = true) { return Compute_Matching_Value(generic_goal->m_matches, update); };
-    Utility Compute_Matching_Value(Plan_List & matches, const bool update = true);
-    Utility Compute_Matching_Value(const bool update = true) { return Compute_Matching_Value(m_matches, update); };
-    Utility Recompute_Matching_Value(Plan_List & matches, const bool update = true, const bool show_strength = true);
-    Utility Recompute_Matching_Value(const bool update = true, const bool show_strength = true) { return Recompute_Matching_Value(m_matches, update, show_strength); };
+    Utility Compute_Matching_With_Generic_Matches(Goal_ptr generic_goal, const bool markGarrison = false) { return Compute_Matching_Value(generic_goal->m_matches, true, markGarrison); };
+    Utility Compute_Matching_Value(Plan_List & matches, const bool update = true, const bool markGarrison = false);
+    Utility Compute_Matching_Value(const bool update = true, const bool markGarrison = false) { return Compute_Matching_Value(m_matches, update, markGarrison); };
+    Utility Recompute_Matching_Value(Plan_List & matches, const bool update = true);
+    Utility Recompute_Matching_Value(const bool update = true) { return Recompute_Matching_Value(m_matches, update); };
     Utility Get_Matching_Value() const;
     void    Set_Matching_Value(Utility combinedUtility);
+    Utility Mark_For_Garrison(Plan_List & matches);
 
     bool Add_Match(const Agent_ptr & agent, const bool update_match_value = true, const bool needsCargo = false);
     bool Add_Transport_Match(const Agent_ptr & agent) { return Add_Match(agent, true, true); };

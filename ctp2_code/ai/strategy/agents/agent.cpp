@@ -262,7 +262,7 @@ void Agent::Log_Debug_Info(const int & log, const Goal * const goal) const
 	           m_playerId,
 	           goal != NULL ? goal->Get_Goal_Type() : -1,
 	           -1,
-	           ("\t\t   Agent: handle=%x,\tArmy name: %s,\tclass=%x,\t(x=%3d,y=%3d),\t (is_used=%d) \t (by_this=%d) \t (by_sub=%d) \t %20s (%2d units, %2d cargo) \t in %s\n",
+	           ("\t\t   Agent: handle=%x,\tArmy name: %s,\tclass=%x,\t(x=%3d,y=%3d),\t (is_used=%d) \t (by_this=%d) \t (by_sub=%d) \t (garrison=%d) \t %20s (%2d units, %2d cargo) \t in %s\n",
 	            m_army.m_id,
 	            m_army->GetName(),
 	            m_squad_class,
@@ -271,6 +271,7 @@ void Agent::Log_Debug_Info(const int & log, const Goal * const goal) const
 	            (m_goal ? 1 : 0),
 	            ((m_goal == goal) ? 1 : 0),
 	            ((goal != nullptr && m_goal == goal->GetSubGoal()) ? 1 : 0),
+	            m_neededForGarrison ? 1 : 0,
 	            g_theUnitDB->GetNameStr(m_army->Get(0).GetType()),
 	            m_army->Num(),
 	            m_army->GetCargoNum(),
@@ -677,7 +678,7 @@ void Agent::Group_With( Agent_ptr second_army )
 
 	MapPoint dest_pos = m_goal->Get_Target_Pos();
 
-	sprintf(myString, "Grouping at (%d,%d) to %s (%d,%d)", pos.x, pos.y, goalString, dest_pos.x, dest_pos.y);
+	sprintf(myString, "Grouping at (%d,%d) to %s %s (%d,%d)", pos.x, pos.y, goalString, (g_theWorld->HasCity(m_goal->Get_Target_Pos()) ? g_theWorld->GetCity(m_goal->Get_Target_Pos()).GetName() : "field"), dest_pos.x, dest_pos.y);
 	g_graphicsOptions->AddTextToArmy(m_army, myString, 220, m_goal->Get_Goal_Type());
 
 	delete[] goalString;
