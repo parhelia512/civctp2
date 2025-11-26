@@ -1594,7 +1594,9 @@ void Goal::Compute_Needed_Troop_Flow()
 			m_current_needed_strength.Set_Defenders(static_cast<sint8>(defensive_garrison + offensive_garrison));
 			m_current_needed_strength.Set_Ranged_Units(static_cast<sint8>(ranged_garrison));
 
-			if(goal_record->GetIsGarrison() && m_target_city.IsValid())
+			// This includes also the slave garrison
+			Assert(m_target_city.IsValid());
+			if(m_target_city.IsValid())
 				m_current_needed_strength.Set_Unit_Count(m_target_city.CD()->GetNeededGarrison());
 		}
 	}
