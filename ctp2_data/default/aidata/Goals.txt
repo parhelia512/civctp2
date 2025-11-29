@@ -83,6 +83,7 @@ GOAL_GARRISON {
   IsGarrison
   ExecuteIncrementally
   UnGroupFirst
+  OnlyFortifiable
 
   SquadClass:CanAttack
   SquadClass:CanDefend

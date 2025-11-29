@@ -1652,6 +1652,9 @@ void Scheduler::Add_New_Matches_For_Goal
 		if(hasInField && g_theWorld->HasCity(agent->Get_Army()->RetPos()))
 			continue;
 
+		if(g_theGoalDB->Get(type)->GetOnlyFortifiable() && !agent->Get_Army()->CanEntrench())
+			continue;
+
 		goal_ptr->Add_Match(agent, update_match_value);
 	}
 }
@@ -1681,6 +1684,9 @@ void Scheduler::Add_New_Matches_For_Agent
 			continue;
 
 		if(g_theGoalDB->Get(i)->GetInField() && g_theWorld->HasCity(agent->Get_Army()->RetPos()))
+			continue;
+
+		if(g_theGoalDB->Get(i)->GetOnlyFortifiable() && !agent->Get_Army()->CanEntrench())
 			continue;
 
 		for
