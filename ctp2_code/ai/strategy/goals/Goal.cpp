@@ -990,6 +990,11 @@ void Goal::Commit_Agents()
 	const GoalRecord * goal_record  = g_theGoalDB->Get(m_goal_type);
 	bool isGarrison = goal_record->GetIsGarrison();
 
+	if(m_sub_goal != nullptr)
+	{
+		m_current_attacking_strength += m_sub_goal->m_current_attacking_strength;
+	}
+
 	for
 	(
 	    Plan_List::iterator match_iter  = m_matches.begin();
