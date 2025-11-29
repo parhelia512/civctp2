@@ -152,6 +152,7 @@ public:
     Utility Get_Matching_Value() const;
     void    Set_Matching_Value(Utility combinedUtility);
     Utility Mark_For_Garrison(Plan_List & matches);
+    const char* GetTargetName() const;
 
     bool Add_Match(const Agent_ptr & agent, const bool update_match_value = true, const bool needsCargo = false);
     bool Add_Transport_Match(const Agent_ptr & agent) { return Add_Match(agent, true, true); };
@@ -217,7 +218,7 @@ public:
     bool IsCurrentlyUnavailable() const;
     bool IsTargetImmune() const;
     bool IsInvalidByDiplomacy() const;
-    void SetSubGoal(Goal* subGoal) { m_sub_goal = subGoal; }
+    void SetSubGoal(Goal* subGoal) { Assert(this->Get_Target_Pos() == subGoal->Get_Target_Pos());  m_sub_goal = subGoal; }
     Goal* GetSubGoal() const { return m_sub_goal; }
     size_t GetSubGoalCount() const { return m_sub_goal != nullptr ? m_sub_goal->m_agents.size() : 0; }
 

@@ -479,6 +479,13 @@ const Squad_Strength Goal::Get_Strength_Needed() const // Rename to missing stre
 	return needed_strength;
 }
 
+const char* Goal::GetTargetName() const
+{
+	MapPoint pos = Get_Target_Pos();
+	return g_theWorld->HasCity(pos) ? g_theWorld->GetCity(pos).GetName() : (pos.IsValid() ? "field" : "invalid");
+}
+
+
 Utility Goal::Compute_Matching_Value(Plan_List & matches, const bool update, const bool markGarrison)
 {
 	if(IsInvalid())
@@ -509,10 +516,11 @@ Utility Goal::Compute_Matching_Value(Plan_List & matches, const bool update, con
 	           m_goal_type,
 	           -1,
 	           (
-	            "\tCompute Matching Value for goal: %s, raw_match: %i (%s)\n",
+	            "\tCompute Matching Value for goal: %s, raw_match: %i, target: %s, subtarget: %s\n",
 	            g_theGoalDB->Get(m_goal_type)->GetNameText(),
 	            m_raw_priority,
-	            (g_theWorld->HasCity(Get_Target_Pos()) ? g_theWorld->GetCity(Get_Target_Pos()).GetName() : "field")
+	            GetTargetName(),
+	            m_sub_goal != nullptr ? m_sub_goal->GetTargetName() : "None"
 	           )
 	          );
 
@@ -2177,7 +2185,7 @@ Utility Goal::Compute_Agent_Matching_Value(const Agent_ptr agent_ptr) const
 	g_theUnitDB->GetNameStr(agent_ptr->Get_Army()->Get(0).GetType()),
 	agent_ptr->Get_Army()->GetName(),
 	(g_theWorld->HasCity(curr_pos) ? g_theWorld->GetCity(curr_pos).GetName() : "field"),
-	(g_theWorld->HasCity(target_pos) ? g_theWorld->GetCity(target_pos).GetName() : "field")
+	GetTargetName()
 	));
 #endif //_DEBUG
 
@@ -2666,7 +2674,7 @@ Utility Goal::Compute_Raw_Priority()
 		                                 report_cell_SmallEmpireBonus,
 		                                 report_cell_WeakestEnemyBonus,
 		                                 report_cell_BarbarianBonus,
-		                                 (g_theWorld->HasCity(target_pos) ? g_theWorld->GetCity(target_pos).GetName() : "field")));
+		                                 GetTargetName()));
 	}
 	// For some reason the following does not work in VC6:
 /*	AI_DPRINTF(k_DBG_SCHEDULER, m_playerId, m_goal_type, -1,
@@ -2693,7 +2701,7 @@ Utility Goal::Compute_Raw_Priority()
 	report_cell_Unexplored,
 	report_cell_NotVisible,
 	threaten_bonus,
-	(g_theWorld->HasCity(target_pos) ? g_theWorld->GetCity(target_pos).GetName() : "field")
+	GetTargetName()
 	));*/
 #endif //_DEBUG
 
@@ -3575,14 +3583,12 @@ void Goal::Log_Debug_Info(const int &log) const
 		                m_combinedUtility,
 		                pos.x,
 		                pos.y,
-		                (g_theWorld->HasCity(pos) ? g_theWorld->GetCity(pos).GetName() : "field")
+		                GetTargetName()
 		           )
 		          );
 	}
 	else
 	{
-		MapPoint pos = Get_Target_Pos();
-
 		AI_DPRINTF
 		          (
 		           log,
@@ -3595,7 +3601,7 @@ void Goal::Log_Debug_Info(const int &log) const
 		                name,
 		                pos.x,
 		                pos.y,
-		                (g_theWorld->HasCity(pos) ? g_theWorld->GetCity(pos).GetName() : "field")
+		                GetTargetName()
 		           )
 		          );
 	}
@@ -3798,23 +3804,23 @@ bool Goal::FollowPathToTask( Agent_ptr first_army,
 		switch (m_sub_task)
 		{
 			case SUB_TASK_RALLY:
-				sprintf(myString, "Group to (%d,%d), %s %s (%d,%d)", dest_pos.x, dest_pos.y, goalString, (g_theWorld->HasCity(Get_Target_Pos()) ? g_theWorld->GetCity(Get_Target_Pos()).GetName() : "field"), targetPos.x, targetPos.y);
+				sprintf(myString, "Group to (%d,%d), %s %s (%d,%d)", dest_pos.x, dest_pos.y, goalString, GetTargetName(), targetPos.x, targetPos.y);
 				break;
 			case SUB_TASK_TRANSPORT_TO_BOARD:
-				sprintf(myString, "Boat to (%d,%d), %s %s (%d,%d)", dest_pos.x, dest_pos.y, goalString, (g_theWorld->HasCity(Get_Target_Pos()) ? g_theWorld->GetCity(Get_Target_Pos()).GetName() : "field"), targetPos.x, targetPos.y);
+				sprintf(myString, "Boat to (%d,%d), %s %s (%d,%d)", dest_pos.x, dest_pos.y, goalString, GetTargetName(), targetPos.x, targetPos.y);
 				break;
 			case SUB_TASK_TRANSPORT_TO_GOAL:
-				sprintf(myString, "Transp. to (%d,%d), %s %s (%d,%d)", dest_pos.x, dest_pos.y, goalString, (g_theWorld->HasCity(Get_Target_Pos()) ? g_theWorld->GetCity(Get_Target_Pos()).GetName() : "field"), targetPos.x, targetPos.y);
+				sprintf(myString, "Transp. to (%d,%d), %s %s (%d,%d)", dest_pos.x, dest_pos.y, goalString, GetTargetName(), targetPos.x, targetPos.y);
 				break;
 			case SUB_TASK_CARGO_TO_BOARD:
-				sprintf(myString, "Cargo. to (%d,%d), %s %s (%d,%d)", dest_pos.x, dest_pos.y, goalString, (g_theWorld->HasCity(Get_Target_Pos()) ? g_theWorld->GetCity(Get_Target_Pos()).GetName() : "field"), targetPos.x, targetPos.y);
+				sprintf(myString, "Cargo. to (%d,%d), %s %s (%d,%d)", dest_pos.x, dest_pos.y, goalString, GetTargetName(), targetPos.x, targetPos.y);
 				break;
 			case SUB_TASK_AIRLIFT:
-				sprintf(myString, "Airlift to (%d,%d), %s %s (%d,%d)", dest_pos.x, dest_pos.y, goalString, (g_theWorld->HasCity(Get_Target_Pos()) ? g_theWorld->GetCity(Get_Target_Pos()).GetName() : "field"), targetPos.x, targetPos.y);
+				sprintf(myString, "Airlift to (%d,%d), %s %s (%d,%d)", dest_pos.x, dest_pos.y, goalString, GetTargetName(), targetPos.x, targetPos.y);
 				break;
 			case SUB_TASK_GOAL:
 			default:
-				sprintf(myString, "%s %s (%d,%d)", goalString, (g_theWorld->HasCity(Get_Target_Pos()) ? g_theWorld->GetCity(Get_Target_Pos()).GetName() : "field"), dest_pos.x, dest_pos.y);
+				sprintf(myString, "%s %s (%d,%d)", goalString, GetTargetName(), dest_pos.x, dest_pos.y);
 				break;
 		}
 
@@ -4259,7 +4265,7 @@ bool Goal::GotoGoalTaskSolution(Agent_ptr the_army, MapPoint & goal_pos)
 				Utility val = Compute_Agent_Matching_Value(the_army);
 				uint8 magnitude = (uint8)(((5000000 - val) * 255.0) / 5000000);
 				MBCHAR * myString = new MBCHAR[256];
-				sprintf(myString, "Waiting GROUP to GO %s (%d,%d)\n", (g_theWorld->HasCity(Get_Target_Pos()) ? g_theWorld->GetCity(Get_Target_Pos()).GetName() : "field"), goal_pos.x, goal_pos.y);
+				sprintf(myString, "Waiting GROUP to GO %s (%d,%d)\n", GetTargetName(), goal_pos.x, goal_pos.y);
 				g_graphicsOptions->AddTextToArmy(the_army->Get_Army(), myString, magnitude, m_goal_type);
 				delete[] myString;
 
@@ -4781,7 +4787,7 @@ bool Goal::RallyTroops()
 				MBCHAR * myString = new MBCHAR[256];
 				MapPoint goal_pos = Get_Target_Pos(agent_ptr->Get_Army());
 				MapPoint curr_pos = agent_ptr->Get_Pos();
-				sprintf(myString, "Split at (%d,%d) to GO %s (%d,%d)", curr_pos.x, curr_pos.y, (g_theWorld->HasCity(Get_Target_Pos()) ? g_theWorld->GetCity(Get_Target_Pos()).GetName() : "field"), goal_pos.x, goal_pos.y);
+				sprintf(myString, "Split at (%d,%d) to GO %s (%d,%d)", curr_pos.x, curr_pos.y, GetTargetName(), goal_pos.x, goal_pos.y);
 				g_graphicsOptions->AddTextToArmy(agent_ptr->Get_Army(), myString, magnitude);
 				delete[] myString;
 			}
@@ -4885,7 +4891,7 @@ bool Goal::RallyTroops()
 				MBCHAR * myString = new MBCHAR[256];
 				MapPoint goal_pos;
 				goal_pos = Get_Target_Pos(agent1_ptr->Get_Army());
-				sprintf(myString, "Waiting GROUP to %s GO (%d,%d)", (g_theWorld->HasCity(Get_Target_Pos()) ? g_theWorld->GetCity(Get_Target_Pos()).GetName() : "field"), goal_pos.x, goal_pos.y);
+				sprintf(myString, "Waiting GROUP to %s GO (%d,%d)", GetTargetName(), goal_pos.x, goal_pos.y);
 				g_graphicsOptions->AddTextToArmy(agent1_ptr->Get_Army(), myString, magnitude);
 				delete[] myString;
 			}
