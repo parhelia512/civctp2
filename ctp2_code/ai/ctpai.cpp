@@ -212,6 +212,8 @@ void CtpAi::AddGoalsForCitiesAndArmies(const PLAYER_INDEX player)
 	Scheduler & scheduler = Scheduler::GetScheduler(player);
 	const StrategyRecord &strategy = Diplomat::GetDiplomat(player).GetCurrentStrategy();
 
+	Goal newGoal;
+
 	for(GOAL_TYPE goal_type = 0; goal_type < g_theGoalDB->NumRecords(); goal_type++)
 	{
 		sint16 max_eval = 0;
@@ -263,12 +265,8 @@ void CtpAi::AddGoalsForCitiesAndArmies(const PLAYER_INDEX player)
 					Unit city = player_ptr->m_all_cities->Access(i);
 					Assert(city.IsValid() && city->GetCityData());
 
-					Goal * goal_ptr = new Goal();
-					goal_ptr->Set_Type(goal_type);
-					goal_ptr->Set_Player_Index(player);
-					goal_ptr->Set_Target_City(city);
-
-					scheduler.Add_New_Goal(goal_ptr);
+					newGoal.SetBasics(player, goal_type, city);
+					scheduler.Add_New_Goal(newGoal);
 				}
 			}
 
@@ -287,12 +285,8 @@ void CtpAi::AddGoalsForCitiesAndArmies(const PLAYER_INDEX player)
 					Army army = player_ptr->m_all_armies->Access(i);
 					Assert(army.IsValid() && army.AccessData());
 
-					Goal_ptr     goal_ptr = new Goal();
-					goal_ptr->Set_Type(goal_type);
-					goal_ptr->Set_Player_Index(player);
-					goal_ptr->Set_Target_Army(army);
-
-					scheduler.Add_New_Goal(goal_ptr);
+					newGoal.SetBasics(player, goal_type, army);
+					scheduler.Add_New_Goal(newGoal);
 				}
 			}
 		}
@@ -726,6 +720,8 @@ STDEHANDLER(CtpAi_ImprovementComplete) // Not regenerated after reload
 	if(!args->GetInt(0, type))
 		return GEV_HD_Continue;
 
+	Goal newGoal;
+
 	// @ToDo: Move it to its own function that is called in CtpAi::BeginTurn with all the other goal adding stuff
 	// @ToDo: Get efficient method to determine endgame positions. Otherwise scan the whole map. But probably that is still cheap compared to adding the goals.
 	if (GaiaController::sm_endgameImprovements & ((uint64)0x1 << (uint64)type))
@@ -752,12 +748,8 @@ STDEHANDLER(CtpAi_ImprovementComplete) // Not regenerated after reload
 				if (playerId == owner && !goal_rec->GetTargetOwnerSelf())
 					continue;
 
-				Goal_ptr goal_ptr = new Goal();
-				goal_ptr->Set_Player_Index( playerId );
-				goal_ptr->Set_Type(static_cast<GOAL_TYPE>(goal_type));
-				goal_ptr->Set_Target_Pos( pos );
-
-				scheduler.Add_New_Goal( goal_ptr );
+				newGoal.SetBasics(playerId, goal_type, pos);
+				scheduler.Add_New_Goal(newGoal);
 			}
 		}
 	}
@@ -1696,6 +1688,8 @@ void CtpAi::Resize()
 
 void CtpAi::AddExploreTargets(const PLAYER_INDEX playerId)
 {
+	Goal newGoal;
+
 	Scheduler & scheduler = Scheduler::GetScheduler(playerId);
 	const StrategyRecord & strategy =
 		Diplomat::GetDiplomat(playerId).GetCurrentStrategy();
@@ -1738,12 +1732,8 @@ void CtpAi::AddExploreTargets(const PLAYER_INDEX playerId)
 				// After completion of one exploration goal a human player
 				// goes to the next cell on the map,
 				// in most cases a neighbour tile.
-				Goal * goal_ptr = new Goal();
-				goal_ptr->Set_Type( goal_type );
-				goal_ptr->Set_Player_Index( playerId );
-				goal_ptr->Set_Target_Pos( pos );
-
-				scheduler.Add_New_Goal( goal_ptr );
+				newGoal.SetBasics(playerId, goal_type, pos);
+				scheduler.Add_New_Goal(newGoal);
 			}
 		}
 	}
@@ -1760,6 +1750,7 @@ void CtpAi::AddSettleTargets(const PLAYER_INDEX playerId)
 	if (player_ptr == NULL)
 		return;
 
+	Goal newGoal;
 	SettleMap::SettleTargetList targets;
 	SettleMap::s_settleMap.GetSettleTargets(playerId, targets);
 
@@ -1832,12 +1823,8 @@ void CtpAi::AddSettleTargets(const PLAYER_INDEX playerId)
 				 (g_theWorld->IsWater(settle_target.m_pos)) &&
 				 (g_theGoalDB->Get(goal_type)->GetTargetTypeSettleSea()))
 			{
-				Goal_ptr goal_ptr = new Goal();
-				goal_ptr->Set_Type( goal_type );
-				goal_ptr->Set_Player_Index( playerId );
-				goal_ptr->Set_Target_Pos( settle_target.m_pos );
-
-				scheduler.Add_New_Goal( goal_ptr );
+				newGoal.SetBasics(playerId, goal_type, settle_target.m_pos);
+				scheduler.Add_New_Goal(newGoal);
 
 				uint8   magnitude = (uint8) (((max_desired_goals - desired_goals) * 255) / max_desired_goals);
 				char buf[10];
@@ -1858,6 +1845,8 @@ void CtpAi::AddMiscMapTargets(const PLAYER_INDEX playerId)
 
 	Player *player_ptr = g_player[playerId];
 	Assert(player_ptr);
+
+	Goal newGoal;
 
 	for (sint32 goal_element = 0; goal_element < strategy.GetNumGoalElement(); goal_element++)
 	{
@@ -1887,22 +1876,14 @@ void CtpAi::AddMiscMapTargets(const PLAYER_INDEX playerId)
 				if (cell->GetIsChokePoint() &&
 					g_theGoalDB->Get(goal_type)->GetTargetTypeChokePoint())
 				{
-					Goal * goal_ptr = new Goal();
-					goal_ptr->Set_Type( goal_type );
-					goal_ptr->Set_Player_Index( playerId );
-					goal_ptr->Set_Target_Pos( pos );
-
-					scheduler.Add_New_Goal( goal_ptr );
+					newGoal.SetBasics(playerId, goal_type, pos);
+					scheduler.Add_New_Goal(newGoal);
 				}
 
 				if (cell->GetGoodyHut())
 				{
-					Goal * goal_ptr = new Goal();
-					goal_ptr->Set_Type( goal_type );
-					goal_ptr->Set_Player_Index( playerId );
-					goal_ptr->Set_Target_Pos( pos );
-
-					scheduler.Add_New_Goal( goal_ptr );
+					newGoal.SetBasics(playerId, goal_type, pos);
+					scheduler.Add_New_Goal(newGoal);
 				}
 			}
 		}

@@ -941,15 +941,14 @@ void Scheduler::Match_Resources(const bool move_armies)
 // 4) Also called by CtpAi_KillCityEvent, CtpAi_NukeCityUnit, CtpAi_ImprovementComplete.
 //
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
-void Scheduler::Add_New_Goal(const Goal_ptr & new_goal)
+void Scheduler::Add_New_Goal(const Goal & new_goal)
 {
-	if(new_goal->IsComplete())
+	if(new_goal.IsComplete())
 	{
-		delete new_goal;
 		return;
 	}
 
-	sint32 goal_type    = new_goal->Get_Goal_Type();
+	sint32 goal_type    = new_goal.Get_Goal_Type();
 
 	Sorted_Goal_Iter tmp_goal_iter =
 		m_goals_of_type[goal_type].begin();
@@ -957,16 +956,15 @@ void Scheduler::Add_New_Goal(const Goal_ptr & new_goal)
 	while(tmp_goal_iter != m_goals_of_type[goal_type].end())
 	{
 		Goal_ptr old_goal = tmp_goal_iter->second;
-		if(*old_goal == *new_goal)
+		if(*old_goal == new_goal)
 		{
-			delete new_goal;
 			return;
 		}
 		tmp_goal_iter++;
 	}
 
 	m_goals_of_type[goal_type].
-		push_back(Sorted_Goal_ptr(Goal::BAD_UTILITY, new_goal));
+		push_back(Sorted_Goal_ptr(Goal::BAD_UTILITY, new Goal(new_goal)));
 }
 
 void Scheduler::Associate_Goals_With_Sub_Goals()

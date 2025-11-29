@@ -158,7 +158,7 @@ public:
 
 	void Match_Resources(const bool move_armies);
 
-	void Add_New_Goal(const Goal_ptr & new_goal);
+	void Add_New_Goal(const Goal & new_goal);
 
 	void Scheduler::Associate_Goals_With_Sub_Goals();
 

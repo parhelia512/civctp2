@@ -222,6 +222,10 @@ public:
     Goal* GetSubGoal() const { return m_sub_goal; }
     size_t GetSubGoalCount() const { return m_sub_goal != nullptr ? m_sub_goal->m_agents.size() : 0; }
 
+    void SetBasics(sint8 playerId, GOAL_TYPE type, const Unit & city)    { m_playerId = playerId; m_goal_type = type; m_target_city      = city; m_target_army.m_id = 0;    m_target_pos.Set(0, 0); }
+    void SetBasics(sint8 playerId, GOAL_TYPE type, const Army & army)    { m_playerId = playerId; m_goal_type = type; m_target_city.m_id = 0;    m_target_army      = army; m_target_pos.Set(0, 0); }
+    void SetBasics(sint8 playerId, GOAL_TYPE type, const MapPoint & pos) { m_playerId = playerId; m_goal_type = type; m_target_city.m_id = 0;    m_target_army      = 0;    m_target_pos = pos;     }
+
 private:
 
     void Rollback_Agent(Agent_List::iterator & agent_iter);
