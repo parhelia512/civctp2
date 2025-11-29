@@ -766,9 +766,19 @@ void Scheduler::Match_Resources(const bool move_armies)
 
 		if(goal_ptr->Get_Agent_Count() == 0)
 		{
-			AI_DPRINTF(k_DBG_SCHEDULER, m_playerId, goal_ptr->Get_Goal_Type(), -1,
-					("\t\tGOAL (goal: %x) -- No agents were committed, maybe next time. Continuing...\n",
-						goal_ptr));
+			if(goal_ptr->GetSubGoalCount() == 0)
+			{
+				AI_DPRINTF(k_DBG_SCHEDULER, m_playerId, goal_ptr->Get_Goal_Type(), -1,
+						("\t\tGOAL (goal: %x) -- No agents were committed, maybe next time. Continuing...\n",
+							goal_ptr));
+			}
+			else
+			{
+				AI_DPRINTF(k_DBG_SCHEDULER, m_playerId, goal_ptr->Get_Goal_Type(), -1,
+						("\t\tGOAL (goal: %x) -- Only agents for subgoal were committed, nothing more to do here. Continuing...\n",
+							goal_ptr));
+			}
+
 			goal_iter++;
 #if defined(_DEBUG)
 			loopCount++;
