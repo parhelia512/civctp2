@@ -2293,10 +2293,6 @@ void Scheduler::Assign_Garrison()
 		{
 			goal_ptr->Compute_Matching_With_Generic_Matches(generic_goal_ptr, true);
 		}
-		else
-		{
-			Assert(false);
-		}
 	}
 }
 
