@@ -152,7 +152,7 @@ WAR_OVER				"{player[0].civ_name_singular} nie sa juz w stanie wojny z nacja {pl
 
 ## Trade Messages ##
 TRADE_PIRATED				"{player[0].sir_cap}, Nasz szlak handlowy z miasta {city[0].name} do miasta {city[1].name} zostal napadniety przez {player[1].civ_name_plural]."
-TRADE_PIRATE_BONUS			"The trade route carrying {good[0].name} from {city[0].name} to {city[1].name} has been pirated by the {player[0].civ_name_plural} and {gold[0].value} food, {gold[1].value} production, {gold[2].value} gold was lost."
+TRADE_PIRATE_BONUS			"The trade route carrying {good[0].name} from {city[0].name} to {city[1].name} has been pirated by the {player[0].civ_name_plural} and {gold[0].value} food, {gold[1].value} production, and {gold[2].value} gold was lost."
 TRADE_PIRATE_GOLD			"{gold[0].value} gold was pirated on the trade route carrying {good[0].name} from {city[0].name} to {city[1].name} owned by {player[0].civ_name_plural}."
 TRADE_ROUTES_BROKEN_BY_EMBARGO		"{player[0].sir_cap}, {player[1].civ_name_singular} nalozyli embargo handlowe na wszystkie nasze towary.  Wszystkie istniejace szlaki handlowe prowadzace do kraju {player[1].civ_name_plural} zostaly zamkniete!  Stracilismy niestety tez wszystkie przydzielone do nich karawany."
 TRADE_ROUTES_BROKEN_BY_WAR		"Zle wiesci, {player[0].sir}.  Z powodu narastajacych konfliktow mniedzy Nami a panstwem {player[1].civ_name_plural}, wszystkie nasze szlaki handlowe prowadzace do miast {player[1].civ_name_plural} zostaly zamkniete.  Stracilismy niestety tez wszystkie przydzielone do nich karawany."
