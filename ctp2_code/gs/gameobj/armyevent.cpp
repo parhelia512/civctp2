@@ -817,7 +817,29 @@ STDEHANDLER(ArmyMoveEvent)
 				}
 			}
 
-			Assert(!g_player[owner]->IsRobot() || Diplomat::GetDiplomat(owner).HasWarOrDesiresPreemptivelyWith(defender->GetOwner()));
+			if(g_player[owner]->IsRobot() && !Diplomat::GetDiplomat(owner).HasWarOrDesiresPreemptivelyWith(defender->GetOwner()))
+			{
+				Assert(defender->IsVisible(owner));
+				if( defender->CanBeExpelled()
+				&&  defender->IsVisible(owner)
+				&& !g_player[owner]->HasAllianceWith(defender->GetOwner())
+				){
+					DPRINTF(k_DBG_GAMESTATE, ("Army 0x%lx, %s (%s) of player %d kicks out %s of player %d.\n", army.m_id, army->GetName(), g_theUnitDB->GetNameStr(army->Get(0).GetType()), owner, g_theUnitDB->GetNameStr(defender->Get(0).GetType()), defender->GetOwner()));
+					g_gevManager->AddEvent( GEV_INSERT_Tail,
+					                        GEV_ExpelOrder,
+					                        GEA_Army, army.m_id,
+					                        GEA_MapPoint, newPos,
+					                        GEA_End);
+				}
+
+				DPRINTF(k_DBG_GAMESTATE, ("Army 0x%lx, %s (%s) of player %d clears current oders to avoid attacking player %d (%s) as it does not desire war.\n", army.m_id, army->GetName(), g_theUnitDB->GetNameStr(army->Get(0).GetType()), owner, defender->GetOwner(), g_theUnitDB->GetNameStr(defender->Get(0).GetType())));
+				g_gevManager->AddEvent(GEV_INSERT_AfterCurrent,
+									   GEV_ClearOrders,
+									   GEA_Army, army,
+									   GEA_End);
+
+				return GEV_HD_Continue;
+			}
 
 			if(g_player[owner]->IsRobot() && army->CanFight(*defender) || g_player[owner]->IsHuman())
 			{
