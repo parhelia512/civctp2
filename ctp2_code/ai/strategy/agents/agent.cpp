@@ -785,6 +785,9 @@ sint32 Agent::DisbandObsoleteUnits()
 	if (!Get_Can_Be_Executed())
 		return 0;
 
+	if (IsNeededForGarrison())
+		return 0;
+
 	if (!m_army->IsObsolete())
 		return 0;
 
@@ -792,6 +795,13 @@ sint32 Agent::DisbandObsoleteUnits()
 		return 0;
 
 	if (m_army->CanSettle())
+		return 0;
+
+	// This doesn't seem to be needed
+//	if(Has_Any_Goal())
+//		return 0;
+
+	if(m_army->NumOrders() > 0)
 		return 0;
 
 	MapPoint    pos         = Get_Pos();
