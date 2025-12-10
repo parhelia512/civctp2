@@ -827,7 +827,7 @@ STDEHANDLER(ArmyMoveEvent)
 				&& !g_player[owner]->HasAllianceWith(defender->GetOwner())
 				){
 					DPRINTF(k_DBG_GAMESTATE, ("Army 0x%lx, %s (%s) of player %d kicks out %s of player %d.\n", army.m_id, army->GetName(), g_theUnitDB->GetNameStr(army->Get(0).GetType()), owner, g_theUnitDB->GetNameStr(defender->Get(0).GetType()), defender->GetOwner()));
-					g_gevManager->AddEvent( GEV_INSERT_Tail,
+					g_gevManager->AddEvent( GEV_INSERT_AfterCurrent,
 					                        GEV_ExpelOrder,
 					                        GEA_Army, army.m_id,
 					                        GEA_MapPoint, newPos,
