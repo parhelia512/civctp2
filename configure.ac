@@ -94,8 +94,8 @@ CXX_WARNINGS="$COMMON_WARNINGS -Winvalid-offsetof"
 C_WARNINGS="-Wall -Wno-unused-variable -Wno-parentheses -Wno-format-overflow -Wno-deprecated-declarations -Wno-comment -Wno-char-subscripts"
 CXX_WARNINGS="-Wall -Wno-unused-variable -Wno-parentheses -Wno-class-memaccess -Wno-format-overflow -Wno-deprecated-declarations -Wno-comment -Wno-char-subscripts"
 
-CFLAGS="$C_WARNINGS -fms-extensions -fmessage-length=0 -fuse-ld=gold $CFLAGS"
-CXXFLAGS="$CXX_WARNINGS -fpermissive -fms-extensions -fmessage-length=0 -frtti -fexceptions -fuse-ld=gold $CXXFLAGS"
+CFLAGS="$C_WARNINGS -fms-extensions -fmessage-length=0 $CFLAGS"
+CXXFLAGS="$CXX_WARNINGS -fpermissive -fms-extensions -fmessage-length=0 -frtti -fexceptions $CXXFLAGS"
 AC_SUBST(CFLAGS)
 AC_SUBST(CPPFLAGS)
 AC_SUBST(CXXFLAGS)

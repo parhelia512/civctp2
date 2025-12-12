@@ -133,7 +133,7 @@ The build itself is pretty classing and straight forward:
 
 ```
 ./autogen.sh
-CFLAGS="$CFLAGS -O3" CXXFLAGS="$CXXFLAGS -O3" ./configure --enable-silent-rules
+CFLAGS="$CFLAGS -O3 -fuse-ld=gold" CXXFLAGS="$CXXFLAGS -O3 -fuse-ld=gold" ./configure --enable-silent-rules
 make -j$(nproc)
 ```
 
@@ -141,7 +141,7 @@ If you want to build a debug version it is:
 
 ```
 ./autogen.sh
-CFLAGS="$CFLAGS -g -O0 -fno-omit-frame-pointer" CXXFLAGS="$CXXFLAGS -g -O0 -fno-omit-frame-pointer" ./configure --enable-silent-rules --enable-debug
+CFLAGS="$CFLAGS -g -O0 -fno-omit-frame-pointer -fuse-ld=gold" CXXFLAGS="$CXXFLAGS -g -O0 -fno-omit-frame-pointer -fuse-ld=gold" ./configure --enable-silent-rules --enable-debug
 make -j$(nproc)
 ```
 
